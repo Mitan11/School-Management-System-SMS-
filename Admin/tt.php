@@ -6,27 +6,30 @@ if (isset($_POST['submit'])) {
     $section_id = $_POST['section'];
     $teacher_id = $_POST['teacher'];
     $period_id = $_POST['period'];
-    $day_id = $_POST['day'];
+    $day_name = $_POST['day'];
     $subject_id = $_POST['Subject'];
     $date_add = date('Y-m-d H:i:s');
     $status = 'publish';
     $author = 1;
     $type = 'timetable';
-    $query = mysqli_query($db_connection, "INSERT INTO posts (`type`,`author`,`status`,`publish_date`) VALUES ('$type','$author','$status','$date_add')");
+
+    $query = mysqli_query($db_connection, "INSERT INTO `posts`(`author`, `title`, `description`, `type`, `status`,`parent`) VALUES ('1','$type','description','timetable','publish',0)") or die('DB error');
+
     if ($query) {
         $item_id = mysqli_insert_id($db_connection);
-        $metadata = [
-            'class_id' => $class_id,
-            'section_id' => $section_id,
-            'teacher_id' => $teacher_id,
-            'period_id' => $period_id,
-            'day_id' => $day_id,
-            'subject_id' => $subject_id
-        ];
+    }
 
-        foreach ($metadata as $key => $value) {
-            mysqli_query($db_connection, "INSERT INTO metadata (`item_id`,`meta_key`,`meta_value`) VALUES ('$item_id','$key','$value')");
-        }
+    $metadata = array(
+        'class_id' => $class_id,
+        'section_id' => $section_id,
+        'teacher_id' => $teacher_id,
+        'lectur_id' => $period_id,
+        'day_name' => $day_name,
+        'subject_id' => $subject_id,
+    );
+
+    foreach ($metadata as $key => $value) {
+        mysqli_query($db_connection, "INSERT INTO metadata (`item_id`,`meta_key`,`meta_value`) VALUES ('$item_id','$key','$value')");
     }
     header('Location: tt.php');
 }
@@ -64,7 +67,11 @@ include('sidebar.php');
                                     <select name="class" id="class" class="form-select">
                                         <option value="" selected disabled>--Select Class--</option>
                                         <?php
-                                        $classes = get_posts(['type' => 'class', 'status' => 'publish']);
+                                        $args = array(
+                                            'type' => 'class',
+                                            'status' => 'publish',
+                                        );
+                                        $classes = get_posts($args);
                                         foreach ($classes as $class) { ?>
                                             <option value="<?php echo $class->id ?>"><?php echo $class->title ?></option>
                                         <?php } ?>
@@ -85,6 +92,7 @@ include('sidebar.php');
                                     <select name="teacher" id="teacher" class="form-select">
                                         <option value="" selected disabled>--Select Teacher--</option>
                                         <option value="1">Teacher 1</option>
+                                        <option value="2">Teacher 2</option>
                                     </select>
                                 </div>
                             </div>
@@ -119,7 +127,7 @@ include('sidebar.php');
                                     <label for="Subject">Select Subject</label>
                                     <select name="Subject" id="Subject" class="form-select">
                                         <option value="" selected disabled>--Select Subject--</option>
-                                        <option value="1">English</option>
+                                        <option value="19">Mathematics</option>
                                     </select>
                                 </div>
                             </div>
@@ -187,9 +195,11 @@ include('sidebar.php');
                             foreach ($periods as $period) {
                                 $from = get_metadata($period->id, 'from')[0]->meta_value;
                                 $to = get_metadata($period->id, 'to')[0]->meta_value;
-                            ?>
+                                ?>
                                 <tr>
-                                    <td><?php echo date('h:i A', strtotime($from)) ?> - <?php echo date('h:i A', strtotime($to)) ?></td>
+                                    <td><?php echo date('h:i A', strtotime($from)) ?> -
+                                        <?php echo date('h:i A', strtotime($to)) ?>
+                                    </td>
                                     <?php
                                     $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                                     foreach ($days as $day) {
@@ -198,19 +208,39 @@ include('sidebar.php');
                                         INNER JOIN metadata as mp ON (mp.item_id = p.id) 
                                         WHERE p.type = 'timetable' AND p.status = 'publish' 
                                         AND md.meta_key = 'day_name' AND md.meta_value = '$day' 
-                                        AND mp.meta_key = 'period_id' AND mp.meta_value = $period->id ");
+                                        AND mp.meta_key = 'lectur_id' AND mp.meta_value = $period->id ");
+
                                         if (mysqli_num_rows($query) > 0) {
                                             while ($timetable = mysqli_fetch_object($query)) { ?>
                                                 <td>
                                                     <p>
-                                                        <b>Teacher : </b><?php $teacher_id = get_metadata($timetable->item_id, 'teacher_id')[0]->meta_value;
-                                                        echo get_user_data($teacher_id)[0]->name; ?>
+                                                        <b>Teacher: </b>
+                                                        <?php
+                                                        $teacher_id = get_metadata($timetable->item_id, 'teacher_id')[0]->meta_value;
+
+                                                        echo get_user_data($teacher_id)->name;
+                                                        ?>
+
+
                                                         <br>
-                                                        <b>Class : </b>Class 1
+                                                        <b>Class: </b>
+                                                        <?php
+                                                        $class_id = get_metadata($timetable->item_id, 'class_id', )[0]->meta_value;
+                                                        echo get_post(array('id' => $class_id))->title;
+                                                        ?>
                                                         <br>
-                                                        <b>Section : </b>
+                                                        <b>Section: </b>
+                                                        <?php
+                                                        $section_id = get_metadata($timetable->item_id, 'section_id', )[0]->meta_value;
+                                                        echo get_post(array('id' => $section_id))->title;
+                                                        ?>
                                                         <br>
-                                                        <b>Subject : </b>Science
+                                                        <b>Subject: </b>
+                                                        <?php
+                                                        $subject_id = get_metadata($timetable->item_id, 'subject_id', )[0]->meta_value;
+                                                        echo get_post(array('id' => $subject_id))->title;
+                                                        ?>
+                                                        <br>
                                                     </p>
                                                 </td>
                                             <?php }

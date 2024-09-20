@@ -10,15 +10,14 @@ $date_add = date('y-m-d g:i:s');
 
 $query = mysqli_query($db_connection,"INSERT INTO `posts` (`title`,`status`,`publish_date`,`type`) VALUES ('$title','$status','$date_add','$type')");
 
-if(true){
+if ($query) {
     $item_id = mysqli_insert_id($db_connection);
-    
 }
 
 mysqli_query($db_connection,"INSERT INTO `metadata`(`meta_key`, `meta_value`,`item_id`) VALUES ('from','$from','$item_id')");
 mysqli_query($db_connection,"INSERT INTO `metadata` (`meta_key`,`meta_value`,`item_id`) VALUES ('to','$to','$item_id')");
 
-header("Location : periods.php");
+header("Location: periods.php");
 }
 ?>
 <?php include('header.php'); ?>

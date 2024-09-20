@@ -30,7 +30,7 @@
             <div class="col-sm-6">
                 <div class="d-flex">
                     <h1 class="m-0 text-dark">Manage Accounts</h1>
-                    <!-- <a href="user-account.php?user=<?php echo $_REQUEST['user'] ?>&action=add-new" class="btn btn-primary btn-sm">Add New</a> -->
+                    <!-- <a href="user-account.php?user=<?php #echo $_REQUEST['user'] ?>&action=add-new" class="btn btn-primary btn-sm">Add New</a> -->
                 </div>
 
             </div><!-- /.col -->
@@ -59,7 +59,7 @@
 <section class="content">
     <div class="container-fluid">
 
-        <?php if (isset($_GET['action'])) { ?>
+        <?php if (isset($_GET['action']) && $_REQUEST['user'] == "student") { ?>
             <div class="card">
                 <div class="card-body" id="form-container">
                     <?php if ($_GET['action'] == 'add-new') { ?>
@@ -323,7 +323,12 @@
                     <?php } ?>
                 </div>
             </div>
-        <?php } else { ?>
+        <?php } 
+        
+        
+        
+        
+        else { ?>
             <!-- Info boxes -->
             <div class="card">
                 <div class="card-header py-2">
