@@ -91,8 +91,15 @@ include('sidebar.php');
                                     <label for="teacher">Select Teacher</label>
                                     <select name="teacher" id="teacher" class="form-select">
                                         <option value="" selected disabled>--Select Teacher--</option>
-                                        <option value="1">Teacher 1</option>
-                                        <option value="2">Teacher 2</option>
+                                        <?php
+                                        $args = array('user_type'=>'teacher');
+                                        $result = get_users($args);
+
+                                        foreach($result as $teacher_name){ ?>
+                                        
+                                        <option value="<?php echo $teacher_name->id ?>"><?php echo $teacher_name->name ?></option>
+                                    <?php  }
+                                    ?>
                                     </select>
                                 </div>
                             </div>

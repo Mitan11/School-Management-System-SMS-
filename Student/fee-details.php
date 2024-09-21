@@ -38,7 +38,7 @@ if (isset($_POST['form_submitted'])) {
 
 }
 
-if ($_GET['action'] == 'view-invoice') { ?>
+if (isset($_GET['action']) && $_GET['action'] == 'view-invoice') { ?>
 
     <div class="container pt-3">
         <div class="row">

@@ -1,12 +1,12 @@
-<?php include('../includes/config.php')?>
+<?php include('../includes/config.php') ?>
 <?php include('header.php'); ?>
 <?php include('sidebar.php'); ?>
 
 <?php
-    if(isset($_POST['submit'])){
-        $title = $_POST['title'];
-        mysqli_query($db_connection , "INSERT INTO sections (title) value ('$title')") or die('Try Again');
-    }
+if (isset($_POST['submit'])) {
+    $title = $_POST['title'];
+    $query = mysqli_query($db_connection, "INSERT INTO `posts`(`author`, `title`, `description`, `type`, `status`,`parent`) VALUES ('1','$title','description','section','publish',0)") or die('DB error');
+}
 ?>
 
 <!-- Content Header (Page header) -->
@@ -46,14 +46,14 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                            $count = 1;
-                                            $args = array('type'=>'section','status'=>'publish',);
-                                            $sections = get_posts($args);
-                                            foreach($sections as $section){?>
+                                        $count = 1;
+                                        $args = array('type' => 'section', 'status' => 'publish', );
+                                        $sections = get_posts($args);
+                                        foreach ($sections as $section) { ?>
                                             <tr>
-                                                <td><?=$count++ ?></td>
-                                                <td><?=$section->title ?></td>
-                                                <td><?php  ?></td>
+                                                <td><?= $count++ ?></td>
+                                                <td><?= $section->title ?></td>
+                                                <td><?php ?></td>
                                             </tr>
                                         <?php } ?>
                                     </tbody>
@@ -75,7 +75,7 @@
                                         <input type="text" id="title" name="title" placeholder="Enter Title" required
                                             class="form-control">
                                     </div>
-                                                
+
                                     <button class="float-right btn btn-success" name="submit">Submit</button>
                                 </form>
                             </div>
