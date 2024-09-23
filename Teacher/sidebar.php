@@ -202,9 +202,9 @@
                     </a>
                     <ul class="nav nav-treeview" style="display: none;">
                         <li class="nav-item">
-                            <a href="<?=$site_url?>Teacher/" class="nav-link">
+                            <a href="<?=$site_url?>Teacher/attendance.php" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Classes</p>
+                                <p>Attendants</p>
                             </a>
                         </li>
                     </ul>
