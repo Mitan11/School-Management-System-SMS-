@@ -232,13 +232,13 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-users"></i>
                         <p>
-                            Study metarila
+                            Study material
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview" style="display: none;">
                         <li class="nav-item">
-                            <a href="<?=$site_url?>Admin/#" class="nav-link">
+                            <a href="<?=$site_url?>Student/study-materials.php" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Classes</p>
                             </a>

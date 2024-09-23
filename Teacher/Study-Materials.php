@@ -41,13 +41,13 @@ if (isset($_POST['submit'])) {
             if ($query) {
                 $item_id = mysqli_insert_id($db_connection);
             }
-        
+
             $meta_data = array(
                 'class' => $class,
                 'subject' => $subject,
-                'file-attachment' => $file
+                'file_attachment' => $file
             );
-        
+
             foreach ($meta_data as $key => $value) {
                 mysqli_query($db_connection, "INSERT INTO `metadata` (`item_id`, `meta_key`, `meta_value`) VALUES ('$item_id', '$key', '$value')");
             }
@@ -81,59 +81,115 @@ if (isset($_POST['submit'])) {
 
 <section class="content">
     <div class="container-fluid">
-        <?php
 
-        $classes = get_posts(['type' => 'class', 'status' => 'publish']);
-        $subjects = get_posts(['type' => 'subject', 'status' => 'publish']);
+        <?php if (isset($_GET['action']) && $_GET['action'] == 'add-new') { 
 
-        ?>
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Add New Study Material</h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <form action="" method="post" enctype="multipart/form-data">
+            $classes = get_posts(['type' => 'class', 'status' => 'publish']);
+            $subjects = get_posts(['type' => 'subject', 'status' => 'publish']);
 
-                        <div class="form-group">
-                            <label for="title">Class</label>
-                            <input type="text" name="title" id="title" class="form-control" placeholder="Enter the title">
-                        </div>
+            ?>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Add New Study Material</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <form action="" method="post" enctype="multipart/form-data">
 
-                        <div class="form-group">
-                            <label for="title">Class</label>
-                            <textarea name="discription" id="discription" class="form-control" placeholder="Enter discription">discription</textarea>
-                        </div>
+                            <div class="form-group">
+                                <label for="title">Class</label>
+                                <input type="text" name="title" id="title" class="form-control"
+                                    placeholder="Enter the title">
+                            </div>
 
-                        <div class="form-group">
-                            <label for="class">Class</label>
-                            <select class="form-select mb-3" aria-label="Default select example" name="class" required
-                                id="class">
-                                <option selected disabled>-- Select Class --</option>
-                                <?php foreach ($classes as $class) { ?>
-                                    <option value="<?= $class->id ?>"><?= $class->title ?></option>
+                            <div class="form-group">
+                                <label for="title">Class</label>
+                                <textarea name="discription" id="discription" class="form-control"
+                                    placeholder="Enter discription">discription</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="class">Class</label>
+                                <select class="form-select mb-3" aria-label="Default select example" name="class" required
+                                    id="class">
+                                    <option selected disabled>-- Select Class --</option>
+                                    <?php foreach ($classes as $class) { ?>
+                                        <option value="<?= $class->id ?>"><?= $class->title ?></option>
+                                    <?php } ?>
+
+                                </select>
+                            </div>
+                            <label for="subject">Subject</label>
+                            <select class="form-select mb-3" aria-label="Default select example" name="subject" id="subject"
+                                required>
+                                <option selected disabled>-- Select Subject --</option>
+                                <?php foreach ($subjects as $subject) { ?>
+                                    <option value="<?= $subject->id ?>"><?= $subject->title ?></option>
                                 <?php } ?>
-
                             </select>
-                        </div>
-                        <label for="subject">Subject</label>
-                        <select class="form-select mb-3" aria-label="Default select example" name="subject" id="subject"
-                            required>
-                            <option selected disabled>-- Select Subject --</option>
-                            <?php foreach ($subjects as $subject) { ?>
-                                <option value="<?= $subject->id ?>"><?= $subject->title ?></option>
-                            <?php } ?>
-                        </select>
 
-                        <div class="input-group mb-3">
-                            <input type="file" class="form-control" name="attachment" id="attachment" required>
-                        </div>
+                            <div class="input-group mb-3">
+                                <input type="file" class="form-control" name="attachment" id="attachment" required>
+                            </div>
 
-                        <button class="btn btn-success" name="submit">Submit</button>
-                    </form>
+                            <button class="btn btn-success" name="submit">Submit</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php } else { ?>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Study Materials</h3>
+                    <div class="card-tools">
+                        <a href="?action=add-new" class="btn btn-sm btn-success"><i class="fa fa-plus mr-2"></i>Add
+                            New</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered bg-white">
+                            <thead>
+                                <tr>
+                                    <th>S.No.</th>
+                                    <th>Attachment</th>
+                                    <th>Title</th>
+                                    <th>Class</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $count = 1;
+                                $query = mysqli_query($db_connection, "SELECT * FROM `posts` WHERE `type`='study-material' AND author = 1 ");
+                                while ($attachment = mysqli_fetch_object($query)) { 
+                                    $class_id = get_metadata($attachment->id,'class')[0]->meta_value;
+                                    $class = get_post(['id'=>$class_id]);
+
+                                    $subject_id = get_metadata($attachment->id,'subject')[0]->meta_value;
+                                    $subject = get_post(['id'=>$subject_id]);
+
+                                    $file_attachment = get_metadata($attachment->id,'file_attachment')[0]->meta_value;
+                                    ?>
+                                    <tr>
+                                        <td><?= $count++ ?></td>
+                                        <td><?= $attachment->title ?></td>
+                                        <td><?= $file_attachment ?>&nbsp;&nbsp;&nbsp;<a href="../dist/uploads/<?= $file_attachment ?>" download="<?= $file_attachment ?>"><i class="fa-solid fa-download"></i></a></td>
+                                        <td><?= $class->title ?></td>
+                                        <td><?= $subject->title ?></td>
+                                        <td><?= $attachment->publish_date ?></td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        <?php } ?>
+
     </div>
 </section>
 

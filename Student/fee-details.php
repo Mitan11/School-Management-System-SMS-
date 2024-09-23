@@ -178,9 +178,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'view-invoice') { ?>
                 </div>
             <?php }
             ?>
-            <?php
-            // $std_id = isset($_GET['std_id']) ? $_GET['std_id'] : ''; 
+            <?php 
             $usermeta = get_user_metadata($std_id);
+            $class = get_post(['id' => $usermeta['class']]);
+
             ?>
 
             <div class="card">
@@ -191,7 +192,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'view-invoice') { ?>
                 </div>
                 <div class="card-body">
                     <strong>Name : </strong><?php print_r(get_users(array('id' => $std_id))[0]->name); ?>
-                    <br><strong>Class : </strong><?php echo $usermeta['class']; ?>
+                    <br><strong>Class : </strong><?php echo $class->title; ?>
                 </div>
             </div>
 

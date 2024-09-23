@@ -138,10 +138,10 @@ function get_user_metadata($user_id)
 
 function get_usermeta($user_id,$meta_key,$signle=true)
 {
-    global $db_conn;
+    global $db_connection;
     if(!empty($user_id) && !empty($meta_key))
     {
-        $query = mysqli_query($db_conn,"SELECT * FROM usermeta WHERE `user_id` = '$user_id' AND `meta_key` = '$meta_key'");
+        $query = mysqli_query($db_connection,"SELECT * FROM usermeta WHERE `user_id` = '$user_id' AND `meta_key` = '$meta_key'");
     }
     else{
         return false;
@@ -153,6 +153,29 @@ function get_usermeta($user_id,$meta_key,$signle=true)
     else{
         return mysqli_fetch_object($query);
     }
+}
+
+
+
+
+function get_users_meta($args = array(),$type ='object')
+{
+    global $db_connection;
+    $condition = "";
+    if(!empty($args))
+    {
+        foreach($args as $k => $v)
+        {
+            $v = (string)$v;
+            $condition_ar[] = "$k = '$v'";
+        }
+        if ($condition_ar > 0) {
+            $condition = "WHERE " . implode(" AND ", $condition_ar);
+        }
+        
+    }
+    $query = mysqli_query($db_connection,"SELECT * FROM usermeta $condition");
+    return data_output($query , $type);
 }
 
 ?>
