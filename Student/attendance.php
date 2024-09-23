@@ -3,12 +3,15 @@ include('../includes/config.php');
 include('header.php');
 include('sidebar.php');
 
+// Initialize arrays to store attendance records and status
 $attendance_records = [];
 $attendance_status = [];
 
+// Query to fetch attendance records for a specific student
 $attendance_query = "SELECT * FROM `attendance` WHERE student_id = $std_id";
 $attendance_data = mysqli_query($db_connection, $attendance_query);
 
+// Loop through the fetched attendance data and store it in arrays
 while ($record = mysqli_fetch_object($attendance_data)) {
     $attendance_records[] = $record;
     $attendance_status[date('Y-m-d', strtotime($record->date))] = $record->status;
@@ -34,23 +37,27 @@ while ($record = mysqli_fetch_object($attendance_data)) {
 <section class="content">
     <div class="container-fluid">
         <?php
+        // Calendar class to render the attendance calendar
         class Calendar
         {
             private $currentYear;
             private $currentMonth;
 
+            // Constructor to initialize the current year and month
             public function __construct()
             {
                 $this->currentYear = isset($_GET['year']) ? (int) $_GET['year'] : date('Y');
                 $this->currentMonth = isset($_GET['month']) ? (int) $_GET['month'] : date('m');
             }
 
+            // Render the calendar with attendance status
             public function render($attendance_status)
             {
                 $this->renderHeader();
                 $this->renderDays($attendance_status);
             }
 
+            // Render the calendar header with navigation
             private function renderHeader()
             {
                 echo "<div class='datepicker'>";
@@ -65,6 +72,7 @@ while ($record = mysqli_fetch_object($attendance_data)) {
                 echo "</tr></thead><tbody>";
             }
 
+            // Render the days of the month with attendance status
             private function renderDays($attendance_status)
             {
                 $firstDayOfMonth = mktime(0, 0, 0, $this->currentMonth, 1, $this->currentYear);
@@ -72,10 +80,12 @@ while ($record = mysqli_fetch_object($attendance_data)) {
                 $startingDay = date('w', $firstDayOfMonth);
 
                 echo "<tr>";
+                // Render empty cells for days before the first day of the month
                 for ($i = 0; $i < $startingDay; $i++) {
                     echo "<td></td>";
                 }
 
+                // Render each day of the month with attendance status
                 for ($day = 1; $day <= $totalDays; $day++) {
                     if (($startingDay + $day - 1) % 7 == 0 && $day > 1) {
                         echo "</tr><tr>";
@@ -84,6 +94,7 @@ while ($record = mysqli_fetch_object($attendance_data)) {
                     $dateString = sprintf('%04d-%02d-%02d', $this->currentYear, $this->currentMonth, $day);
                     $statusClass = '';
 
+                    // Determine the CSS class based on attendance status
                     if (isset($attendance_status[$dateString])) {
                         switch ($attendance_status[$dateString]) {
                             case 'present':
@@ -104,6 +115,7 @@ while ($record = mysqli_fetch_object($attendance_data)) {
                     echo "<td data-action='selectDay' data-day='{$dateString}' class='day {$statusClass}'>{$day}</td>";
                 }
 
+                // Render empty cells for days after the last day of the month
                 while (($startingDay + $totalDays) % 7 != 0) {
                     echo "<td></td>";
                     $totalDays++;
@@ -139,13 +151,14 @@ while ($record = mysqli_fetch_object($attendance_data)) {
                     <div class="px-3 d-flex align-items-center">
                         <div class="bg-warning rounded-circle" style="height: 10px; width: 10px; margin-right: 5px;">
                         </div>
-                        <span>Present</span>
+                        <span>Late</span>
                     </div>
                 </div>
             </div>
             <div class="card-body pt-0">
                 <div id="calendar" style="width: 100%;">
                     <?php
+                    // Create a new Calendar instance and render it with attendance status
                     $calendar = new Calendar();
                     $calendar->render($attendance_status);
                     ?>
