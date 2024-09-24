@@ -3,7 +3,17 @@ include('../includes/config.php');
 include('header.php');
 include('sidebar.php');
 ?>
-
+<div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">SMS</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="message">
+                <!-- Message will be displayed here -->
+            </div>
+        </div>
+    </div>
 <?php
 
 $students = [];
@@ -24,6 +34,7 @@ if (isset($_GET['class_id']) && isset($_GET['date'])) {
             );
         }
     }
+    $_SESSION['toastMessage'] = "Data Loaded successfully";
 }
 
 if (isset($_POST['SaveAttendance'])) {
@@ -35,8 +46,9 @@ if (isset($_POST['SaveAttendance'])) {
         $query = "INSERT INTO `attendance`(`class`, `date`, `student_id`, `status`) VALUES ('$class_id','$date','$student_id','$status')";
         mysqli_query($db_connection, $query);
     }
-
+    $_SESSION['toastMessage'] = "Attendance marked successfully";
     echo "<script>window.location.href = 'attendance.php';</script>";
+    exit();
 
 }
 ?>
@@ -179,4 +191,19 @@ if (isset($_POST['SaveAttendance'])) {
             alert('CSV export functionality to be implemented');
         });
     });
+</script>
+
+<script>
+$(document).ready(function() {
+    <?php if (isset($_SESSION['toastMessage'])): ?>
+    // Set the message inside the toast
+    $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+    
+    // Show the toast
+    $('.toast').toast('show');
+    
+    // Unset the session message to avoid showing it again on page reload
+    <?php unset($_SESSION['toastMessage']); ?>
+    <?php endif; ?>
+});
 </script>

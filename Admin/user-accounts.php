@@ -1,28 +1,38 @@
 <?php include('../includes/config.php') ?>
 <?php
-// $error = '';
-// if (isset($_POST['submit'])) {
-//     $name = $_POST['name'];
-//     $email = $_POST['email'];
-//     $password = md5(1234567890);
-//     $type = $_POST['type'];
+$error = '';
+if (isset($_POST['submit'])) {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $password = md5(1234567890);
+    $type = $_POST['type'];
 
-//     $check_query = mysqli_query($db_connection, "SELECT * FROM user_accounts WHERE email = '$email'");
-//     if (mysqli_num_rows($check_query) > 0) {
-//         $error = 'Email already exists';
-//     } else {
-//         mysqli_query($db_connection, "INSERT INTO user_accounts (`name`,`email`,`password`,`user_type`) VALUES ('$name','$email','$password','$type')") or die(mysqli_error($db_connection));
-//         $_SESSION['success_msg'] = 'User has been succefuly registered';
-//         header('location: user-accounts.php?user=' . $type);
-//         exit;
-//     }
-// }
+    $check_query = mysqli_query($db_connection, "SELECT * FROM user_accounts WHERE email = '$email'");
+    if (mysqli_num_rows($check_query) > 0) {
+        $error = 'Email already exists';
+    } else {
+        // mysqli_query($db_connection, "INSERT INTO user_accounts (`name`,`email`,`password`,`user_type`) VALUES ('$name','$email','$password','$type')") or die(mysqli_error($db_connection));
+        $_SESSION['success_msg'] = 'User has been succefuly registered';
+        header('location: user-accounts.php?user=' . $type);
+        exit();
+    }
+}
 
 ?>
 
 <?php include('header.php') ?>
 <?php include('sidebar.php') ?>
-
+<div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">SMS</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="message">
+                <!-- Message will be displayed here -->
+            </div>
+        </div>
+    </div>
 <!-- Content Header (Page header) -->
 <div class="content-header">
     <div class="container-fluid">
@@ -40,17 +50,6 @@
                     <li class="breadcrumb-item active"><?php echo ucfirst($_REQUEST['user']) ?></li>
                 </ol>
             </div><!-- /.col -->
-            <?php
-            // $_SESSION['success_msg'] = 'User has been succefuly registered';
-            // print_r($_SESSION);
-            if (isset($_SESSION['success_msg'])) { ?>
-                <div class="col-12">
-                    <small class="text-success" style="font-size:16px"><?= $_SESSION['success_msg'] ?></small>
-                </div>
-                <?php
-                unset($_SESSION['success_msg']);
-            }
-            ?>
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
 </div>
@@ -245,7 +244,6 @@
                                     <div class="col-lg">
                                         <div class="form-group">
                                             <label for="class">Class</label>
-                                            <!-- <input type="text" class="form-control" placeholder="Class" name="class"> -->
 
                                             <select name="class" id="class" class="form-select">
                                                 <option value="" selected disabled>--Select Class--</option>
@@ -323,12 +321,7 @@
                     <?php } ?>
                 </div>
             </div>
-        <?php } 
-        
-        
-        
-        
-        else { ?>
+        <?php } else { ?>
             <!-- Info boxes -->
             <div class="card">
                 <div class="card-header py-2">
@@ -336,7 +329,7 @@
                         <?php echo ucfirst($_REQUEST['user']) ?>s
                     </h3>
                     <div class="card-tools">
-                        <a href="?user=<?php echo $_REQUEST['user'] ?>&action=add-new" class="btn btn-success btn-xs"><i
+                        <a href="?user=<?php echo $_REQUEST['user'] ?>&action=add-new" class="btn btn-success btn-sm"><i
                                 class="fa fa-plus mr-2"></i>Add New</a>
                     </div>
                 </div>
@@ -386,7 +379,7 @@
 
             $.ajax({
                 type: "post",
-                url: "http://localhost/School-Management-System%20-%20Copy/Action/student-registration.php",
+                url: "http://localhost/School-Management-System/Action/student-registration.php",
                 data: formdata,
                 dataType: 'json',
                 beforeSend: function () {
@@ -397,7 +390,7 @@
                     console.log(response.success);
                     if (response.success == true) {
                         // Properly format the URL parameters
-                        var redirectUrl = 'http://localhost/School-Management-System%20-%20Copy/Admin/user-accounts.php?user=student&action=fee-payment&std_id=' + response.std_id + '&payment_method=' + response.payment_method;
+                        var redirectUrl = 'http://localhost/School-Management-System/Admin/user-accounts.php?user=student&action=fee-payment&std_id=' + response.std_id + '&payment_method=' + response.payment_method;
                         location.href = redirectUrl;
                     }
                 }
@@ -409,3 +402,18 @@
 </script>
 
 <?php include('footer.php') ?>
+
+<script>
+$(document).ready(function() {
+    <?php if (isset($_SESSION['toastMessage'])): ?>
+    // Set the message inside the toast
+    $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+    
+    // Show the toast
+    $('.toast').toast('show');
+    
+    // Unset the session message to avoid showing it again on page reload
+    <?php unset($_SESSION['toastMessage']); ?>
+    <?php endif; ?>
+});
+</script>

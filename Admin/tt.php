@@ -1,4 +1,18 @@
-<?php include('../includes/config.php') ?>
+<?php include('../includes/config.php') ;
+include('header.php');
+?>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">SMS</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="message">
+                <!-- Message will be displayed here -->
+            </div>
+        </div>
+    </div>
 
 <?php
 if (isset($_POST['submit'])) {
@@ -31,10 +45,11 @@ if (isset($_POST['submit'])) {
     foreach ($metadata as $key => $value) {
         mysqli_query($db_connection, "INSERT INTO metadata (`item_id`,`meta_key`,`meta_value`) VALUES ('$item_id','$key','$value')");
     }
+    $_SESSION['toastMessage'] = "Lecture added successfully";
     header('Location: tt.php');
+    exit();
 }
 
-include('header.php');
 include('sidebar.php');
 ?>
 
@@ -150,6 +165,9 @@ include('sidebar.php');
         <?php } else { ?>
             <div class="card">
                 <div class="card-header">
+                    <div class="card-title">
+                        View Time Table
+                    </div>
                     <a href="?action=add" class="btn btn-sm btn-success float-end">Add new</a>
                 </div>
                 <div class="card-body">
@@ -266,3 +284,19 @@ include('sidebar.php');
 </section>
 
 <?php include('footer.php'); ?>
+
+
+<script>
+$(document).ready(function() {
+    <?php if (isset($_SESSION['toastMessage'])): ?>
+    // Set the message inside the toast
+    $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+    
+    // Show the toast
+    $('.toast').toast('show');
+    
+    // Unset the session message to avoid showing it again on page reload
+    <?php unset($_SESSION['toastMessage']); ?>
+    <?php endif; ?>
+});
+</script>

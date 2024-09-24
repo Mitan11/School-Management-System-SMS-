@@ -1,7 +1,17 @@
 <?php include('../includes/config.php') ?>
 <?php include('header.php'); ?>
 <?php include('sidebar.php'); ?>
-
+<div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">SMS</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="message">
+                <!-- Message will be displayed here -->
+            </div>
+        </div>
+    </div>
 <?php
 if (isset($_POST['submit'])) {
     $title = $_POST['title'];
@@ -16,6 +26,11 @@ if (isset($_POST['submit'])) {
     foreach ($sections as $key => $value) {
         mysqli_query($db_connection, "INSERT INTO `metadata` (`item_id`,`meta_key`,`meta_value`) VALUES ('$post_id','section','$value')") or die(mysqli_error($db_conn));
     }
+
+    $_SESSION['toastMessage'] = "Class added successfully";
+    echo "<script>window.location.href = 'classes.php';</script>";
+    exit();
+
 }
 ?>
 
@@ -137,3 +152,18 @@ if (isset($_POST['submit'])) {
 </div>
 <!-- /.content-header -->
 <?php include('footer.php'); ?>
+
+<script>
+$(document).ready(function() {
+    <?php if (isset($_SESSION['toastMessage'])): ?>
+    // Set the message inside the toast
+    $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+    
+    // Show the toast
+    $('.toast').toast('show');
+    
+    // Unset the session message to avoid showing it again on page reload
+    <?php unset($_SESSION['toastMessage']); ?>
+    <?php endif; ?>
+});
+</script>

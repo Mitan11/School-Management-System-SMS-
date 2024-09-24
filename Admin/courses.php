@@ -1,6 +1,16 @@
 <?php include('../includes/config.php')?>
 <?php include('header.php'); ?>
-
+<div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">SMS</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="message">
+                <!-- Message will be displayed here -->
+            </div>
+        </div>
+    </div>
 <?php 
     if(isset($_POST['submit'])){ 
         $name = $_POST['cname'];
@@ -48,6 +58,9 @@
                 echo "Sorry, there was an error uploading your file.";
             }
         }
+        $_SESSION['toastMessage'] = "Course added successfully";
+        echo "<script>window.location.href = 'courses.php';</script>";
+        exit();
     }
     ?>
 <?php include('sidebar.php'); ?>
@@ -185,3 +198,18 @@
 </div>
 <!-- /.content-header -->
 <?php include('footer.php'); ?>
+
+<script>
+$(document).ready(function() {
+    <?php if (isset($_SESSION['toastMessage'])): ?>
+    // Set the message inside the toast
+    $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+    
+    // Show the toast
+    $('.toast').toast('show');
+    
+    // Unset the session message to avoid showing it again on page reload
+    <?php unset($_SESSION['toastMessage']); ?>
+    <?php endif; ?>
+});
+</script>

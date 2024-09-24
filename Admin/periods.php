@@ -1,4 +1,17 @@
 <?php include('../includes/config.php')?>
+<?php include('header.php'); ?>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">SMS</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="message">
+                <!-- Message will be displayed here -->
+            </div>
+        </div>
+    </div>
 <?php 
 if(isset($_POST['submit'])){
 $title = isset($_POST['title'])?$_POST['title']:'';
@@ -16,11 +29,11 @@ if ($query) {
 
 mysqli_query($db_connection,"INSERT INTO `metadata`(`meta_key`, `meta_value`,`item_id`) VALUES ('from','$from','$item_id')");
 mysqli_query($db_connection,"INSERT INTO `metadata` (`meta_key`,`meta_value`,`item_id`) VALUES ('to','$to','$item_id')");
-
+$_SESSION['toastMessage'] = "Period added successfully";
 header("Location: periods.php");
+exit();
 }
 ?>
-<?php include('header.php'); ?>
 <?php include('sidebar.php'); ?>
 
 <!-- Content Header (Page header) -->
@@ -119,3 +132,18 @@ header("Location: periods.php");
 </div>
 <!-- /.content-header -->
 <?php include('footer.php'); ?>
+
+<script>
+$(document).ready(function() {
+    <?php if (isset($_SESSION['toastMessage'])): ?>
+    // Set the message inside the toast
+    $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+    
+    // Show the toast
+    $('.toast').toast('show');
+    
+    // Unset the session message to avoid showing it again on page reload
+    <?php unset($_SESSION['toastMessage']); ?>
+    <?php endif; ?>
+});
+</script>

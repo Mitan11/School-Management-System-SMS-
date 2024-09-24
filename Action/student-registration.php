@@ -88,6 +88,7 @@ if (isset($_POST['type']) && $_POST['type'] == 'student' && isset($_POST['email'
         'payment_method'=>$payment_method,
         'std_id'=>$user_id,
     );
+    $_SESSION['success_msg'] = 'User has been succefuly registered';
 
     echo json_encode($response);
 }

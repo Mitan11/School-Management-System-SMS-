@@ -1,10 +1,10 @@
 <?php
 // session_start();
-$site_url = 'http://localhost/School-Management-System%20-%20Copy/';
+$site_url = 'http://localhost/School-Management-System/';
 if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
     if(isset($_SESSION['user_type']) && $_SESSION['user_type'] != 'student'){
         $user_type = $_SESSION['user_type'];
-        header('Location: /School-Management-System - Copy/'.ucwords($user_type).'/dashboard.php');
+        header('Location: /School-Management-System/'.ucwords($user_type).'/dashboard.php');
     }
 } 
 else {
