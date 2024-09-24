@@ -176,7 +176,7 @@ if (isset($_POST['submit'])) {
                                     <tr>
                                         <td><?= $count++ ?></td>
                                         <td><?= $attachment->title ?></td>
-                                        <td><?= $file_attachment ?>&nbsp;&nbsp;&nbsp;<a href="../dist/uploads/<?= $file_attachment ?>" download="<?= $file_attachment ?>"><i class="fa-solid fa-download"></i></a></td>
+                                        <td><?= $file_attachment ?>&nbsp;&nbsp;&nbsp;<a href="../dist/uploads/<?= $file_attachment ?>" download="<?= $file_attachment ?>"><i class="fa fa-solid fa-download"></i></a></td>
                                         <td><?= $class->title ?></td>
                                         <td><?= $subject->title ?></td>
                                         <td><?= $attachment->publish_date ?></td>

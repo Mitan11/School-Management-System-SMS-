@@ -24,6 +24,7 @@
             <?php if (isset($_GET['action']) && $_GET['action'] == 'view') {
                 $std_id = isset($_GET['std_id']) ? $_GET['std_id'] : '';
                 $usermeta = get_user_metadata($std_id);
+                $class = get_post(['id' => $usermeta['class']]);
                 ?>
 
                 <div class="card">
@@ -34,7 +35,7 @@
                     </div>
                     <div class="card-body">
                         <strong>Name : </strong><?php print_r(get_users(array('id' => $std_id))[0]->name); ?><br>
-                        <strong>Class : </strong><?php echo $usermeta['class']; ?>
+                        <strong>Class : </strong><?php echo $class->title; ?>
                     </div>
                 </div>
 

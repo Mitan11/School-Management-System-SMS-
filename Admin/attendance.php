@@ -64,70 +64,35 @@ if (isset($_POST['SaveAttendance'])) {
 <section class="content">
     <div class="container-fluid">
 
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card bg-info">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Students</h5>
-                        <p class="card-text"><?php #echo $overview['total_students']; 
-                                                ?></p>
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" action="">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="class-select">Class</label>
+                            <select class="form-select" id="class-select" name="class_id" required>
+                                <option selected disabled>-- SelectClass --</option>
+                                <?php
+                                $result = get_posts(['type' => 'class']);
+                                foreach ($result as $class) { ?>
+                                    <option value="<?= $class->id ?>"><?= $class->title ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="attendance-date">Date</label>
+                            <input type="date" class="form-control" id="attendance-date" name="date" required
+                                value="<?php echo date('Y-m-d') ?>">
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-success">
-                    <div class="card-body">
-                        <h5 class="card-title">Present Today</h5>
-                        <p class="card-text"><?php #echo $overview['present_today']; 
-                                                ?></p>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary">Load Attendance</button>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-warning">
-                    <div class="card-body">
-                        <h5 class="card-title">Absent Today</h5>
-                        <p class="card-text"><?php #echo $overview['absent_today']; 
-                                                ?></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-danger">
-                    <div class="card-body">
-                        <h5 class="card-title">Late Today</h5>
-                        <p class="card-text"><?php #echo $overview['late_today']; 
-                                                ?></p>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
-
-        <form method="GET" action="">
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <label for="class-select">Class</label>
-                    <select class="form-control" id="class-select" name="class_id" required>
-                        <option selected disabled>-- SelectClass --</option>
-                        <?php
-                        $result = get_posts(['type' => 'class']);
-                        foreach ($result as $class) { ?>
-                            <option value="<?= $class->id ?>"><?= $class->title ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="attendance-date">Date</label>
-                    <input type="date" class="form-control" id="attendance-date" name="date" required
-                        value="<?php echo date('Y-m-d') ?>">
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <button type="submit" class="btn btn-primary">Load Attendance</button>
-                </div>
-            </div>
-        </form>
 
 
         <?php if (!empty($students)) { ?>
@@ -139,9 +104,12 @@ if (isset($_POST['SaveAttendance'])) {
                     <div class="card-header">
                         <h3 class="card-title">Student Attendance</h3>
                         <div class="card-tools">
-                            <button type="button" class="btn btn-primary btn-sm" id="mark-all-present">Mark All Present</button>
-                            <button type="button" class="btn btn-primary btn-sm" id="mark-all-Absent">Mark All Absent</button>
-                            <button type="submit" class="btn btn-success btn-sm" name="SaveAttendance">Save Attendance</button>
+                            <button type="button" class="btn btn-primary btn-sm" id="mark-all-present">Mark All
+                                Present</button>
+                            <button type="button" class="btn btn-primary btn-sm" id="mark-all-Absent">Mark All
+                                Absent</button>
+                            <button type="submit" class="btn btn-success btn-sm" name="SaveAttendance">Save
+                                Attendance</button>
                             <button type="button" class="btn btn-info btn-sm" id="export-attendance">Export (CSV)</button>
                         </div>
                     </div>
@@ -157,7 +125,7 @@ if (isset($_POST['SaveAttendance'])) {
                             <tbody>
                                 <?php
                                 foreach ($students as $student) {
-                                ?>
+                                    ?>
                                     <tr>
                                         <td><?php echo $student["id"] ?></td>
                                         <td><?php echo $student["name"] ?></td>
@@ -184,8 +152,8 @@ if (isset($_POST['SaveAttendance'])) {
 
 <?php include('footer.php'); ?>
 <script>
-    $(document).ready(function() {
-        $('.attendance-status').change(function() {
+    $(document).ready(function () {
+        $('.attendance-status').change(function () {
             var status = $(this).val();
             $(this).removeClass('bg-success bg-danger bg-warning');
             if (status === 'present') {
@@ -199,14 +167,14 @@ if (isset($_POST['SaveAttendance'])) {
             }
         }).trigger('change');
 
-        $('#mark-all-present').click(function() {
+        $('#mark-all-present').click(function () {
             $('.attendance-status').val('present').trigger('change');
         });
-        $('#mark-all-Absent').click(function() {
+        $('#mark-all-Absent').click(function () {
             $('.attendance-status').val('absent').trigger('change');
         });
 
-        $('#export-attendance').click(function() {
+        $('#export-attendance').click(function () {
             // Implement CSV export functionality here
             alert('CSV export functionality to be implemented');
         });

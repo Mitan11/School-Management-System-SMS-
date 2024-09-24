@@ -62,13 +62,13 @@ while ($record = mysqli_fetch_object($attendance_data)) {
             {
                 echo "<div class='datepicker'>";
                 echo "<div class='datepicker-days'>";
-                echo "<table class='table table-sm'>";
+                echo "<table class='table table-sm text-center'>";
                 echo "<thead><tr>";
                 echo "<th class='prev'><a href='?year={$this->currentYear}&month=" . ($this->currentMonth - 1) . "'><span class='fa fa-chevron-left'></span></a></th>";
                 echo "<th class='picker-switch' colspan='5'>" . date('F Y', strtotime("{$this->currentYear}-{$this->currentMonth}-01")) . "</th>";
                 echo "<th class='next'><a href='?year={$this->currentYear}&month=" . ($this->currentMonth + 1) . "'><span class='fa fa-chevron-right'></span></a></th>";
                 echo "</tr><tr>";
-                echo "<th class='dow'>Su</th><th class='dow'>Mo</th><th class='dow'>Tu</th><th class='dow'>We</th><th class='dow'>Th</th><th class='dow'>Fr</th><th class='dow'>Sa</th>";
+                echo "<th class='dow'>Sunday</th><th class='dow'>Monday</th><th class='dow'>Tuesday</th><th class='dow'>Wednesday</th><th class='dow'>Thursday</th><th class='dow'>Friday</th><th class='dow'>Saturday</th>";
                 echo "</tr></thead><tbody>";
             }
 
@@ -112,7 +112,7 @@ while ($record = mysqli_fetch_object($attendance_data)) {
                         }
                     }
 
-                    echo "<td data-action='selectDay' data-day='{$dateString}' class='day {$statusClass}'>{$day}</td>";
+                    echo "<td data-action='selectDay' data-day='{$dateString}' class='day'><p class='m-0 d-flex justify-content-center'><span style='width:30px;height:30px;' class='{$statusClass} d-flex justify-content-center align-items-center rounded-circle'>{$day}</span></p></td>";
                 }
 
                 // Render empty cells for days after the last day of the month
