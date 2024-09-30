@@ -11,29 +11,26 @@ if (isset($_POST['submit'])) {
     if (mysqli_num_rows($check_query) > 0) {
         $error = 'Email already exists';
     } else {
-        // mysqli_query($db_connection, "INSERT INTO user_accounts (`name`,`email`,`password`,`user_type`) VALUES ('$name','$email','$password','$type')") or die(mysqli_error($db_connection));
-        $_SESSION['success_msg'] = 'User has been succefuly registered';
-        header('location: user-accounts.php?user=' . $type);
-        exit();
+        
     }
 }
 
 ?>
 
 <?php include('header.php') ?>
-<?php include('sidebar.php') ?>
 <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">SMS</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="message">
-                <!-- Message will be displayed here -->
-            </div>
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">SMS</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="message">
+            <!-- Message will be displayed here -->
         </div>
     </div>
-<!-- Content Header (Page header) -->
+</div>
+<?php include('sidebar.php') ?>
+
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -62,7 +59,7 @@ if (isset($_POST['submit'])) {
             <div class="card">
                 <div class="card-body" id="form-container">
                     <?php if ($_GET['action'] == 'add-new') { ?>
-                        <form action="" id="student-registration" method="post">
+                        <form action="../Action/student-registration.php" id="student-registration" method="post">
                             <fieldset class="border border-dark p-3 mb-3 form-group">
                                 <legend class="d-inline w-auto float-none">Student Information</legend>
                                 <div class="row">
@@ -294,31 +291,8 @@ if (isset($_POST['submit'])) {
                             <button type="submit" name="submit" class="btn btn-primary"><span id="loader"
                                     style='display:none'><i class="fas fa-circle-notch fa-spin"></i></span> Register</button>
                         </form>
-                    <?php } elseif ($_GET['action'] == 'fee-payment') { ?>
-                        <form action="" id="registration-fee" method="post">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label for="">Reciept Number</label>
-                                        <input type="text" name="reciept_number" placeholder="Reciept Number"
-                                            class="form-control">
-                                    </div>
-
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label for="">Registration Fee</label>
-                                        <input type="text" name="registration_fee" placeholder="Registration Fee"
-                                            class="form-control">
-                                    </div>
-                                </div>
-
-                            </div>
-                            <input type="hidden" name="std_id"
-                                value="<?php echo isset($_GET['std_id']) ? $_GET['std_id'] : '' ?>">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
                     <?php } ?>
+
                 </div>
             </div>
         <?php } else { ?>
@@ -369,51 +343,20 @@ if (isset($_POST['submit'])) {
     </div><!--/. container-fluid -->
 </section>
 
-<script>
-
-    console.log("Hello");
-    $('#student-registration').on('submit', function () {
-        console.log("Done");
-        if (true) {
-            var formdata = jQuery(this).serialize();
-
-            $.ajax({
-                type: "post",
-                url: "http://localhost/School-Management-System/Action/student-registration.php",
-                data: formdata,
-                dataType: 'json',
-                beforeSend: function () {
-                    $('#loader').show();
-                },
-                success: function (response) {
-                    console.log(response);
-                    console.log(response.success);
-                    if (response.success == true) {
-                        // Properly format the URL parameters
-                        var redirectUrl = 'http://localhost/School-Management-System/Admin/user-accounts.php?user=student&action=fee-payment&std_id=' + response.std_id + '&payment_method=' + response.payment_method;
-                        location.href = redirectUrl;
-                    }
-                }
-            });
-        }
-        return false;
-    });
-
-</script>
 
 <?php include('footer.php') ?>
 
 <script>
-$(document).ready(function() {
-    <?php if (isset($_SESSION['toastMessage'])): ?>
-    // Set the message inside the toast
-    $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
-    
-    // Show the toast
-    $('.toast').toast('show');
-    
-    // Unset the session message to avoid showing it again on page reload
-    <?php unset($_SESSION['toastMessage']); ?>
-    <?php endif; ?>
-});
+    $(document).ready(function () {
+        <?php if (isset($_SESSION['toastMessage'])): ?>
+            // Set the message inside the toast
+            $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+
+            // Show the toast
+            $('.toast').toast('show');
+
+            // Unset the session message to avoid showing it again on page reload
+            <?php unset($_SESSION['toastMessage']); ?>
+        <?php endif; ?>
+    });
 </script>

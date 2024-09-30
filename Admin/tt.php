@@ -140,8 +140,8 @@ include('sidebar.php');
                                         $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                                         foreach ($days as $day) { ?>
                                             <option value="<?php echo $day ?>"><?php echo ucwords($day) ?></option>
-                                        <?php } ?>
-                                    </select>
+                                            <?php } ?>
+                                        </select>
                                 </div>
                             </div>
                             <div class="col">
@@ -149,7 +149,15 @@ include('sidebar.php');
                                     <label for="Subject">Select Subject</label>
                                     <select name="Subject" id="Subject" class="form-select">
                                         <option value="" selected disabled>--Select Subject--</option>
-                                        <option value="19">Mathematics</option>
+                                        <?php
+                                        $args = array('type'=>'subject','status'=>'publish',);
+                                        $subjects = get_posts($args);
+                                        foreach($subjects as $subject){?>
+                                        ?>
+                                        <option value="<?=$subject->id?>"><?=$subject->title?></option>
+                                        <?php
+                                        }
+                                        ?>
                                     </select>
                                 </div>
                             </div>
@@ -171,7 +179,11 @@ include('sidebar.php');
                     <a href="?action=add" class="btn btn-sm btn-success float-end">Add new</a>
                 </div>
                 <div class="card-body">
-                    <form action="">
+                    <form action="" method="get">
+                        <?php
+                        $class_id = (isset($_GET['class']))?$_GET['class']:1;
+                        $section_id = (isset($_GET['section']))?$_GET['section']:3;
+                        ?>
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
@@ -181,20 +193,27 @@ include('sidebar.php');
                                         <?php
                                         $classes = get_posts(['type' => 'class', 'status' => 'publish']);
                                         foreach ($classes as $class) { ?>
-                                            <option value="<?php echo $class->id ?>"><?php echo $class->title ?></option>
+                                            <option value="<?php echo $class->id ?>" <?php echo ($class_id == $class->id)?'selected':'' ?>><?php echo $class->title ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-lg-6">
-                                <div class="form-group" id="section-container" style="display: none;">
+                                <div class="form-group" id="section-container">
                                     <label for="Section">Select Section</label>
                                     <select name="section" id="Section" class="form-select">
                                         <option value="" selected disabled>--Select Section--</option>
+                                        <?php
+                                        $sections = get_posts(['type' => 'section', 'status' => 'publish']);
+                                        foreach ($sections as $section) { ?>
+                                            <option value="<?php echo $section->id ?>" <?php echo ($section_id == $section->id)?'selected':'' ?>><?php echo $section->title ?></option>
+                                        <?php } ?>
+                                        ?>
                                     </select>
                                 </div>
                             </div>
                         </div>
+                        <button class="btn btn-success float-end" type="submit">Submit</button>
                     </form>
                 </div>
             </div>
@@ -227,13 +246,18 @@ include('sidebar.php');
                                     </td>
                                     <?php
                                     $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                                    
                                     foreach ($days as $day) {
                                         $query = mysqli_query($db_connection, "SELECT * FROM posts as p 
                                         INNER JOIN metadata as md ON (md.item_id = p.id) 
                                         INNER JOIN metadata as mp ON (mp.item_id = p.id) 
+                                        INNER JOIN metadata as mc ON (mc.item_id = p.id) 
+                                        INNER JOIN metadata as ms ON (ms.item_id = p.id) 
                                         WHERE p.type = 'timetable' AND p.status = 'publish' 
                                         AND md.meta_key = 'day_name' AND md.meta_value = '$day' 
-                                        AND mp.meta_key = 'lectur_id' AND mp.meta_value = $period->id ");
+                                        AND mp.meta_key = 'lectur_id' AND mp.meta_value = $period->id 
+                                        AND mc.meta_key = 'class_id' AND mc.meta_value = $class_id 
+                                        AND ms.meta_key = 'section_id' AND ms.meta_value = $section_id");
 
                                         if (mysqli_num_rows($query) > 0) {
                                             while ($timetable = mysqli_fetch_object($query)) { ?>

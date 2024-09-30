@@ -17,6 +17,7 @@ if (isset($_POST['login'])) {
         $user_type = $user->user_type;
         $_SESSION['user_type'] = $user_type;
         $_SESSION['user_id'] = $user->id;
+        $_SESSION['toastMessage'] = "Logged in successfully";    
         header('Location:../'.ucwords($user_type).'/dashboard.php');
         exit();
     }
@@ -26,11 +27,14 @@ if (isset($_POST['login'])) {
         // Set a session variable to indicate the user is logged in
         $_SESSION['login'] = true;
         // Redirect to the homepage
+        $_SESSION['toastMessage'] = "Logged in successfully";    
         header('Location:../Admin/dashboard.php');
         }
         else {
+        $_SESSION['toastMessage'] = "incorrect email or password";    
+        header('Location: ../index.php');
         // Display an error message if the credentials are incorrect
-        echo "Invalid Email or Password";
+        // echo "Invalid Email or Password";
     }
 }
 ?>
