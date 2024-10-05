@@ -1,18 +1,18 @@
-<?php include('../includes/config.php') ;
+<?php include('../includes/config.php');
 include('header.php');
 ?>
 
 <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">SMS</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="message">
-                <!-- Message will be displayed here -->
-            </div>
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">SMS</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="message">
+            <!-- Message will be displayed here -->
         </div>
     </div>
+</div>
 
 <?php
 if (isset($_POST['submit'])) {
@@ -107,14 +107,15 @@ include('sidebar.php');
                                     <select name="teacher" id="teacher" class="form-select">
                                         <option value="" selected disabled>--Select Teacher--</option>
                                         <?php
-                                        $args = array('user_type'=>'teacher');
+                                        $args = array('user_type' => 'teacher');
                                         $result = get_users($args);
 
-                                        foreach($result as $teacher_name){ ?>
-                                        
-                                        <option value="<?php echo $teacher_name->id ?>"><?php echo $teacher_name->name ?></option>
-                                    <?php  }
-                                    ?>
+                                        foreach ($result as $teacher_name) { ?>
+
+                                            <option value="<?php echo $teacher_name->id ?>"><?php echo $teacher_name->name ?>
+                                            </option>
+                                        <?php }
+                                        ?>
                                     </select>
                                 </div>
                             </div>
@@ -140,8 +141,8 @@ include('sidebar.php');
                                         $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                                         foreach ($days as $day) { ?>
                                             <option value="<?php echo $day ?>"><?php echo ucwords($day) ?></option>
-                                            <?php } ?>
-                                        </select>
+                                        <?php } ?>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col">
@@ -150,12 +151,12 @@ include('sidebar.php');
                                     <select name="Subject" id="Subject" class="form-select">
                                         <option value="" selected disabled>--Select Subject--</option>
                                         <?php
-                                        $args = array('type'=>'subject','status'=>'publish',);
+                                        $args = array('type' => 'subject', 'status' => 'publish', );
                                         $subjects = get_posts($args);
-                                        foreach($subjects as $subject){?>
-                                        ?>
-                                        <option value="<?=$subject->id?>"><?=$subject->title?></option>
-                                        <?php
+                                        foreach ($subjects as $subject) { ?>
+                                            ?>
+                                            <option value="<?= $subject->id ?>"><?= $subject->title ?></option>
+                                            <?php
                                         }
                                         ?>
                                     </select>
@@ -181,8 +182,8 @@ include('sidebar.php');
                 <div class="card-body">
                     <form action="" method="get">
                         <?php
-                        $class_id = (isset($_GET['class']))?$_GET['class']:1;
-                        $section_id = (isset($_GET['section']))?$_GET['section']:3;
+                        $class_id = (isset($_GET['class'])) ? $_GET['class'] : 1;
+                        $section_id = (isset($_GET['section'])) ? $_GET['section'] : 3;
                         ?>
                         <div class="row">
                             <div class="col-lg-6">
@@ -193,7 +194,7 @@ include('sidebar.php');
                                         <?php
                                         $classes = get_posts(['type' => 'class', 'status' => 'publish']);
                                         foreach ($classes as $class) { ?>
-                                            <option value="<?php echo $class->id ?>" <?php echo ($class_id == $class->id)?'selected':'' ?>><?php echo $class->title ?></option>
+                                            <option value="<?php echo $class->id ?>" <?php echo ($class_id == $class->id) ? 'selected' : '' ?>><?php echo $class->title ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -206,7 +207,8 @@ include('sidebar.php');
                                         <?php
                                         $sections = get_posts(['type' => 'section', 'status' => 'publish']);
                                         foreach ($sections as $section) { ?>
-                                            <option value="<?php echo $section->id ?>" <?php echo ($section_id == $section->id)?'selected':'' ?>><?php echo $section->title ?></option>
+                                            <option value="<?php echo $section->id ?>" <?php echo ($section_id == $section->id) ? 'selected' : '' ?>><?php echo $section->title ?>
+                                            </option>
                                         <?php } ?>
                                         ?>
                                     </select>
@@ -246,7 +248,7 @@ include('sidebar.php');
                                     </td>
                                     <?php
                                     $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                                    
+
                                     foreach ($days as $day) {
                                         $query = mysqli_query($db_connection, "SELECT * FROM posts as p 
                                         INNER JOIN metadata as md ON (md.item_id = p.id) 
@@ -311,16 +313,16 @@ include('sidebar.php');
 
 
 <script>
-$(document).ready(function() {
-    <?php if (isset($_SESSION['toastMessage'])): ?>
-    // Set the message inside the toast
-    $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
-    
-    // Show the toast
-    $('.toast').toast('show');
-    
-    // Unset the session message to avoid showing it again on page reload
-    <?php unset($_SESSION['toastMessage']); ?>
-    <?php endif; ?>
-});
+    $(document).ready(function () {
+        <?php if (isset($_SESSION['toastMessage'])): ?>
+            // Set the message inside the toast
+            $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+
+            // Show the toast
+            $('.toast').toast('show');
+
+            // Unset the session message to avoid showing it again on page reload
+            <?php unset($_SESSION['toastMessage']); ?>
+        <?php endif; ?>
+    });
 </script>

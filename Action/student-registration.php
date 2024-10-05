@@ -88,7 +88,7 @@ if (isset($_POST['type']) && $_POST['type'] == 'student' && isset($_POST['email'
         'payment_method'=>$payment_method,
         'std_id'=>$user_id,
     );
-    $_SESSION['toastMessage'] = 'User has been succefuly registered';
+    $_SESSION['toastMessage'] = 'Student has been succefuly registered';
     header('location: ../Admin/user-accounts.php?user=' . $type);
 }
 

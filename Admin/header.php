@@ -21,12 +21,8 @@ else {
     <title>Admin | Dashboard</title>
     <!-- FavIcon -->
     <link rel="shortcut icon" href="../Assets/imgs/favicon.png" type="image/x-icon">
-    <!-- DataTable CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
     <!-- jQuery -->
     <script src="../plugins/jquery/jquery.min.js"></script>
-    <!-- DataTable JS -->
-    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <!-- Bootstrap CDN -->
     <link href="../bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">

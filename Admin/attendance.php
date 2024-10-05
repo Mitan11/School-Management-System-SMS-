@@ -4,28 +4,31 @@ include('header.php');
 include('sidebar.php');
 ?>
 <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">SMS</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="message">
-                <!-- Message will be displayed here -->
-            </div>
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">SMS</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="message">
+            <!-- Message will be displayed here -->
         </div>
     </div>
+</div>
 <?php
 
 $students = [];
-if (isset($_GET['class_id']) && isset($_GET['date'])) {
+if (isset($_GET['class_id']) && isset($_GET['date']) && isset($_GET['section'])) {
     $class_id = $_GET['class_id'];
     $date = $_GET['date'];
+    $section = $_GET['section'];
 
-    $result = get_users_meta(array('meta_value' => $class_id));
+    $result = mysqli_query($db_connection, "SELECT user_id FROM `usermeta` WHERE (meta_key = 'class' AND meta_value = '$class_id') OR (meta_key = 'section' AND meta_value = '$section') GROUP BY user_id HAVING COUNT(DISTINCT meta_key) = 2;
+");
+
 
     foreach ($result as $stu) {
 
-        $student = get_users(array('id' => $stu->user_id));
+        $student = get_users(array('id' => $stu['user_id']));
 
         foreach ($student as $key) {
             $students[] = array(
@@ -41,6 +44,7 @@ if (isset($_POST['SaveAttendance'])) {
     $class_id = $_POST['class_id'];
     $date = $_POST['date'];
     $attendance = $_POST['attendance'];
+    $section = $_POST['section'];
 
     foreach ($attendance as $student_id => $status) {
         $query = "INSERT INTO `attendance`(`class`, `date`, `student_id`, `status`) VALUES ('$class_id','$date','$student_id','$status')";
@@ -80,18 +84,35 @@ if (isset($_POST['SaveAttendance'])) {
             <div class="card-body">
                 <form method="GET" action="">
                     <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="class-select">Class</label>
-                            <select class="form-select" id="class-select" name="class_id" required>
-                                <option selected disabled>-- SelectClass --</option>
-                                <?php
-                                $result = get_posts(['type' => 'class']);
-                                foreach ($result as $class) { ?>
-                                    <option value="<?= $class->id ?>"><?= $class->title ?></option>
-                                <?php } ?>
-                            </select>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="class">Select Class</label>
+                                <select name="class_id" id="class" class="form-select">
+                                    <option value="" selected disabled>--Select Class--</option>
+                                    <?php
+                                    $classes = get_posts(['type' => 'class', 'status' => 'publish']);
+                                    foreach ($classes as $class) { ?>
+                                        <option value="<?php echo $class->id ?>"><?php echo $class->title ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-group" id="section-container">
+                                <label for="Section">Select Section</label>
+                                <select name="section" id="Section" class="form-select">
+                                    <option value="" selected disabled>--Select Section--</option>
+                                    <?php
+                                    $sections = get_posts(['type' => 'section', 'status' => 'publish']);
+                                    foreach ($sections as $section) { ?>
+                                        <option value="<?php echo $section->id ?>"><?php echo $section->title ?>
+                                        </option>
+                                    <?php } ?>
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <label for="attendance-date">Date</label>
                             <input type="date" class="form-control" id="attendance-date" name="date" required
                                 value="<?php echo date('Y-m-d') ?>">
@@ -194,16 +215,16 @@ if (isset($_POST['SaveAttendance'])) {
 </script>
 
 <script>
-$(document).ready(function() {
-    <?php if (isset($_SESSION['toastMessage'])): ?>
-    // Set the message inside the toast
-    $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
-    
-    // Show the toast
-    $('.toast').toast('show');
-    
-    // Unset the session message to avoid showing it again on page reload
-    <?php unset($_SESSION['toastMessage']); ?>
-    <?php endif; ?>
-});
+    $(document).ready(function () {
+        <?php if (isset($_SESSION['toastMessage'])): ?>
+            // Set the message inside the toast
+            $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+
+            // Show the toast
+            $('.toast').toast('show');
+
+            // Unset the session message to avoid showing it again on page reload
+            <?php unset($_SESSION['toastMessage']); ?>
+        <?php endif; ?>
+    });
 </script>

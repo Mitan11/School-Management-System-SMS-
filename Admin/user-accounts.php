@@ -1,17 +1,20 @@
 <?php include('../includes/config.php') ?>
 <?php
-$error = '';
+// $_SESSION['toastMessage'] = '';
+unset($_SESSION['toastMessage']);
 if (isset($_POST['submit'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = md5(1234567890);
+    $password = md5($_POST['name']);
     $type = $_POST['type'];
 
     $check_query = mysqli_query($db_connection, "SELECT * FROM user_accounts WHERE email = '$email'");
     if (mysqli_num_rows($check_query) > 0) {
-        $error = 'Email already exists';
+        $_SESSION['toastMessage'] = 'Email already exists';
     } else {
-        
+        $query = mysqli_query($db_connection, "INSERT INTO user_accounts (`name`,`email`,`password`,`user_type`) VALUES ('$name','$email','$password','$type')") or die(mysqli_error($db_connection));
+        $_SESSION['toastMessage'] = 'Teacher has been succefuly registered';
+        header('location: ../Admin/user-accounts.php?user=' . $type);
     }
 }
 
@@ -295,50 +298,70 @@ if (isset($_POST['submit'])) {
 
                 </div>
             </div>
-        <?php } else { ?>
-            <!-- Info boxes -->
-            <div class="card">
-                <div class="card-header py-2">
-                    <h3 class="card-title">
+            <?php
+        } else if (isset($_GET['action']) && $_REQUEST['user'] == "teacher") {
+            ?>
+                <div class="card">
+                    <div class="card-body">
+                        <form action="" method="post">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Full Name" name="name" autocomplete="true"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control" placeholder="Email Address" name="email"
+                                    autocomplete="true" required>
+                            </div>
+                            <input type="hidden" name="type" value="<?php echo $_REQUEST['user'] ?>">
+                            <button type="submit" name="submit" class="btn btn-primary">Register</button>
+                        </form>
+                    </div>
+                </div>
+            <?php
+        } else { ?>
+                <!-- Info boxes -->
+                <div class="card">
+                    <div class="card-header py-2">
+                        <h3 class="card-title">
                         <?php echo ucfirst($_REQUEST['user']) ?>s
-                    </h3>
-                    <div class="card-tools">
-                        <a href="?user=<?php echo $_REQUEST['user'] ?>&action=add-new" class="btn btn-success btn-sm"><i
-                                class="fa fa-plus mr-2"></i>Add New</a>
+                        </h3>
+                        <div class="card-tools">
+                            <a href="?user=<?php echo $_REQUEST['user'] ?>&action=add-new" class="btn btn-success btn-sm"><i
+                                    class="fa fa-plus mr-2"></i>Add New</a>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive bg-white">
-                        <table class="table table-bordered" id="users-table" width="100%">
-                            <thead>
-                                <tr>
-                                    <th width="50">ID</th>
-                                    <th>Name</th>
-                                    <th>email</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                $count = 1;
-                                $user_query = 'SELECT * FROM user_accounts WHERE user_type = "' . $_REQUEST['user'] . '"';
-                                $user_result = mysqli_query($db_connection, $user_query);
-                                while ($users = mysqli_fetch_object($user_result)) {
-                                    ?>
+                    <div class="card-body">
+                        <div class="table-responsive bg-white">
+                            <table class="table table-bordered" id="users-table" width="100%">
+                                <thead>
                                     <tr>
-                                        <td><?= $count++ ?></td>
-                                        <td><?= $users->name ?></td>
-                                        <td><?= $users->email ?></td>
-                                        <td></td>
+                                        <th width="50">ID</th>
+                                        <th>Name</th>
+                                        <th>email</th>
+                                        <th>Action</th>
                                     </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $count = 1;
+                                    $user_query = 'SELECT * FROM user_accounts WHERE user_type = "' . $_REQUEST['user'] . '"';
+                                    $user_result = mysqli_query($db_connection, $user_query);
+                                    while ($users = mysqli_fetch_object($user_result)) {
+                                        ?>
+                                        <tr>
+                                            <td><?= $count++ ?></td>
+                                            <td><?= $users->name ?></td>
+                                            <td><?= $users->email ?></td>
+                                            <td></td>
+                                        </tr>
                                 <?php } ?>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
 
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- /.row -->
+                <!-- /.row -->
         <?php } ?>
     </div><!--/. container-fluid -->
 </section>

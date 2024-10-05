@@ -62,7 +62,7 @@
                             <!-- <a href="login.php" class="nav-link">
                             <img src="./Assets/imgs/user.svg" alt="">&nbsp;User Login
                         </a> -->
-                            <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#login">
                                 <img src="./Assets/imgs/user.svg" alt="">&nbsp;User Login
                             </button>
                             <div class="modal fade" id="login" tabindex="-1" aria-labelledby="exampleModalLabel"
