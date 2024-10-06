@@ -135,7 +135,11 @@ if (isset($_POST['submit'])) {
                                                 ?>
                                             </td>
                                             <td><?= $class->publish_date ?></td>
-                                            <td></td>
+                                            <td>
+                                            <button class="btn btn-warning"><i class="fa fa-solid fa-pen-to-square"></i></button>
+                                                &nbsp;&nbsp;
+                                                <button class="btn btn-danger"><i class="fa fa-solid fa-trash"></i></button>
+                                            </td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>

@@ -168,6 +168,7 @@ if (isset($_POST['submit'])) {
                                         <th>Category</th>
                                         <th>Duration</th>
                                         <th>Date</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -184,6 +185,11 @@ if (isset($_POST['submit'])) {
                                             <td><?= $course->category ?></td>
                                             <td><?= $course->duration ?></td>
                                             <td><?= $course->date ?></td>
+                                            <td>
+                                            <button class="btn btn-warning"><i class="fa fa-solid fa-pen-to-square"></i></button>
+                                                &nbsp;&nbsp;
+                                                <button class="btn btn-danger"><i class="fa fa-solid fa-trash"></i></button>
+                                            </td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>

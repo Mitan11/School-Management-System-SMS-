@@ -70,6 +70,7 @@ exit();
                                             <th>Title</th>
                                             <th>From</th>
                                             <th>To</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -86,6 +87,11 @@ exit();
                                                 <td><?=$period->title ?></td>
                                                 <td><?php echo date('h:i A',strtotime($from)) ?></td>
                                                 <td><?php echo date('h:i A',strtotime($to)) ?></td>
+                                                <td>
+                                                <button class="btn btn-warning"><i class="fa fa-solid fa-pen-to-square"></i></button>
+                                                &nbsp;&nbsp;
+                                                <button class="btn btn-danger"><i class="fa fa-solid fa-trash"></i></button>
+                                                </td>
                                             </tr>
                                         <?php } ?>
                                     </tbody>

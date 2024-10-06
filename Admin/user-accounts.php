@@ -335,7 +335,8 @@ if (isset($_POST['submit'])) {
                             <table class="table table-bordered" id="users-table" width="100%">
                                 <thead>
                                     <tr>
-                                        <th width="50">ID</th>
+                                        <th width="50">No</th>
+                                        <th>ID</th>
                                         <th>Name</th>
                                         <th>email</th>
                                         <th>Action</th>
@@ -350,9 +351,14 @@ if (isset($_POST['submit'])) {
                                         ?>
                                         <tr>
                                             <td><?= $count++ ?></td>
+                                            <td><?= $users->id ?></td>
                                             <td><?= $users->name ?></td>
                                             <td><?= $users->email ?></td>
-                                            <td></td>
+                                            <td>
+                                                <button class="btn btn-warning"><i class="fa fa-solid fa-pen-to-square"></i></button>
+                                                &nbsp;&nbsp;
+                                                <button class="btn btn-danger"><i class="fa fa-solid fa-trash"></i></button>
+                                            </td>
                                         </tr>
                                 <?php } ?>
                                 </tbody>

@@ -69,7 +69,9 @@ if (isset($_POST['submit'])) {
                                                 <td><?= $count++ ?></td>
                                                 <td><?= $section->title ?></td>
                                                 <td>
-                                                    <?php ?>
+                                                <button class="btn btn-warning"><i class="fa fa-solid fa-pen-to-square"></i></button>
+                                                &nbsp;&nbsp;
+                                                <button class="btn btn-danger"><i class="fa fa-solid fa-trash"></i></button>
                                                 </td>
                                             </tr>
                                         <?php } ?>

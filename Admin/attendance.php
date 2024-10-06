@@ -17,7 +17,7 @@ include('sidebar.php');
 <?php
 
 $students = [];
-if (isset($_GET['class_id']) && isset($_GET['date']) && isset($_GET['section'])) {
+if (isset($_GET['class_id']) && isset($_GET['date']) && isset($_GET['section']) && isset($_GET['submit']) && $_GET['submit'] == 'Load-Attendance') {
     $class_id = $_GET['class_id'];
     $date = $_GET['date'];
     $section = $_GET['section'];
@@ -34,6 +34,30 @@ if (isset($_GET['class_id']) && isset($_GET['date']) && isset($_GET['section']))
             $students[] = array(
                 "id" => $key->id,
                 "name" => $key->name,
+                "status" => '',
+            );
+        }
+    }
+    $_SESSION['toastMessage'] = "Data Loaded successfully";
+}
+
+if (isset($_GET['class_id']) && isset($_GET['date']) && isset($_GET['section']) && isset($_GET['submit']) && $_GET['submit'] == 'Update-Attendance') {
+    $class_id = $_GET['class_id'];
+    $date = $_GET['date'];
+    $section = $_GET['section'];
+
+    $result = mysqli_query($db_connection, "SELECT * FROM `attendance` WHERE  `class` = '$class_id' AND `date` = '$date' AND `section` = '$section' ");
+
+
+    foreach ($result as $stu) {
+
+        $student = get_users(array('id' => $stu['student_id']));
+
+        foreach ($student as $key) {
+            $students[] = array(
+                "id" => $key->id,
+                "name" => $key->name,
+                "status" => $stu['status'],
             );
         }
     }
@@ -47,10 +71,25 @@ if (isset($_POST['SaveAttendance'])) {
     $section = $_POST['section'];
 
     foreach ($attendance as $student_id => $status) {
-        $query = "INSERT INTO `attendance`(`class`, `date`, `student_id`, `status`) VALUES ('$class_id','$date','$student_id','$status')";
+        $query = "INSERT INTO `attendance`(`class`, `date`, `student_id`, `status` , `section`) VALUES ('$class_id','$date','$student_id','$status','$section')";
         mysqli_query($db_connection, $query);
     }
     $_SESSION['toastMessage'] = "Attendance marked successfully";
+    echo "<script>window.location.href = 'attendance.php';</script>";
+    exit();
+
+}
+if (isset($_POST['UpdateAttendance'])) {
+    $class_id = $_POST['class_id'];
+    $date = $_POST['date'];
+    $attendance = $_POST['attendance'];
+    $section = $_POST['section'];
+
+    foreach ($attendance as $student_id => $status) {
+        $query = "UPDATE `attendance` SET `status` = '$status' WHERE `date` = '$date' AND `student_id` = '$student_id'";
+        mysqli_query($db_connection, $query);
+    }
+    $_SESSION['toastMessage'] = "Attendance Updated successfully";
     echo "<script>window.location.href = 'attendance.php';</script>";
     exit();
 
@@ -120,7 +159,10 @@ if (isset($_POST['SaveAttendance'])) {
                     </div>
                     <div class="row mb-4">
                         <div class="col-md-12">
-                            <button type="submit" class="btn btn-primary">Load Attendance</button>
+                            <button type="submit" name="submit" value="Load-Attendance" class="btn btn-primary">Load
+                                Attendance</button>
+                            <button type="submit" name="submit" value="Update-Attendance" class="btn btn-warning">Update
+                                Attendance</button>
                         </div>
                     </div>
                 </form>
@@ -132,6 +174,7 @@ if (isset($_POST['SaveAttendance'])) {
 
             <form method="POST" action="">
                 <input type="hidden" name="class_id" value="<?php echo $_GET['class_id']; ?>">
+                <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
                 <input type="hidden" name="date" value="<?php echo $_GET['date']; ?>">
                 <div class="card">
                     <div class="card-header">
@@ -141,8 +184,10 @@ if (isset($_POST['SaveAttendance'])) {
                                 Present</button>
                             <button type="button" class="btn btn-primary btn-sm" id="mark-all-Absent">Mark All
                                 Absent</button>
-                            <button type="submit" class="btn btn-success btn-sm" name="SaveAttendance">Save
-                                Attendance</button>
+                            <button type="submit" class="btn btn-success btn-sm"
+                                name="<?php echo ($_GET['submit'] == 'Load-Attendance') ? 'SaveAttendance' : 'UpdateAttendance' ?>">
+                                <?php echo ($_GET['submit'] == 'Load-Attendance') ? 'Save Attendance' : 'Update Attendance' ?>
+                            </button>
                             <button type="button" class="btn btn-info btn-sm" id="export-attendance">Export (CSV)</button>
                         </div>
                     </div>
@@ -157,18 +202,21 @@ if (isset($_POST['SaveAttendance'])) {
                             </thead>
                             <tbody>
                                 <?php
+
                                 foreach ($students as $student) {
+
                                     ?>
                                     <tr>
                                         <td><?php echo $student["id"] ?></td>
-                                        <td><?php echo $student["name"] ?></td>
+                                        <td><?php echo $student['status'];
+                                        echo $student["name"] ?></td>
                                         <td>
                                             <select class="form-control attendance-status"
                                                 name="attendance[<?php echo $student["id"]; ?>]">
-                                                <option value="present">Present</option>
-                                                <option value="absent">Absent</option>
-                                                <option value="late">Late</option>
-                                                <option value="leave">Leave</option>
+                                                <option value="present" <?php echo ($student['status'] == 'present') ? 'selected' : '' ?>>Present</option>
+                                                <option value="absent" <?php echo ($student['status'] == 'absent') ? 'selected' : '' ?>>Absent</option>
+                                                <option value="late" <?php echo ($student['status'] == 'late') ? 'selected' : '' ?>>Late</option>
+                                                <option value="leave" <?php echo ($student['status'] == 'leave') ? 'selected' : '' ?>>Leave</option>
                                             </select>
                                         </td>
                                     </tr>
