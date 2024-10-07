@@ -355,42 +355,55 @@ if (isset($_POST['submit'])) {
                                             <td><?= $users->name ?></td>
                                             <td><?= $users->email ?></td>
                                             <td>
-                                                <a class="btn btn-warning" href="" data-bs-toggle="modal" data-bs-target="#updateUserModal<?=$users->id ?>"><i class="fa fa-solid fa-pen-to-square"></i></a>
-                                                <div class="modal fade" id="updateUserModal<?=$users->id ?>" tabindex="-1" aria-labelledby="updateUserModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="updateUserModalLabel">Update User Information</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="updateUserForm" method="POST" action="">
-            <input type="hidden" name="action" value="edit">
-            <input type="hidden" name="editId" value="<?= $users->id ?>">
-          <div class="mb-3">
-            <label for="userId" class="form-label">User ID</label>
-            <input type="text" class="form-control" id="userId" name="userId" value="<?=$users->id?>" readonly>
-          </div>
-          <div class="mb-3">
-            <label for="userName" class="form-label">Name</label>
-            <input type="text" class="form-control" id="userName" name="userName" value="<?=$users->name?>" required>
-          </div>
-          <div class="mb-3">
-            <label for="userEmail" class="form-label">Email</label>
-            <input type="email" class="form-control" id="userEmail" name="userEmail" value="<?=$users->email?>" required>
-          </div>
-          <div class="float-end">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary" id="saveChanges" name="save" value="SaveChanges">Save Changes</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+                                                <a class="btn btn-warning" href="" data-bs-toggle="modal"
+                                                    data-bs-target="#updateUserModal<?= $users->id ?>"><i
+                                                        class="fa fa-solid fa-pen-to-square"></i></a>
+                                                <div class="modal fade" id="updateUserModal<?= $users->id ?>" tabindex="-1"
+                                                    aria-labelledby="updateUserModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h1 class="modal-title fs-5" id="updateUserModalLabel">Update User
+                                                                    Information</h1>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form id="updateUserForm" method="POST" action="">
+                                                                    <input type="hidden" name="action" value="edit">
+                                                                    <input type="hidden" name="editId" value="<?= $users->id ?>">
+                                                                    <div class="mb-3">
+                                                                        <label for="userId" class="form-label">User ID</label>
+                                                                        <input type="text" class="form-control" id="userId"
+                                                                            name="userId" value="<?= $users->id ?>" readonly>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="userName" class="form-label">Name</label>
+                                                                        <input type="text" class="form-control" id="userName"
+                                                                            name="userName" value="<?= $users->name ?>" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="userEmail" class="form-label">Email</label>
+                                                                        <input type="email" class="form-control" id="userEmail"
+                                                                            name="userEmail" value="<?= $users->email ?>" required>
+                                                                    </div>
+                                                                    <div class="float-end">
+                                                                        <button type="button" class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">Close</button>
+                                                                        <button type="submit" class="btn btn-primary"
+                                                                            id="saveChanges" name="save" value="SaveChanges">Save
+                                                                            Changes</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                                 &nbsp;&nbsp;
-                                                <a class="btn btn-danger" href="user-accounts.php?user=<?php echo $_REQUEST['user']; ?>&action=delete&deleteId=<?= $users->id ?>"><i class="fa fa-solid fa-trash"></i></a>
+                                                <a class="btn btn-danger"
+                                                    href="user-accounts.php?user=<?php echo $_REQUEST['user']; ?>&action=delete&deleteId=<?= $users->id ?>"><i
+                                                        class="fa fa-solid fa-trash"></i></a>
                                             </td>
                                         </tr>
                                 <?php } ?>
@@ -402,16 +415,17 @@ if (isset($_POST['submit'])) {
                 </div>
                 <!-- /.row -->
         <?php } ?>
-    </div><!--/. container-fluid -->
+    </div>
+    <!--/. container-fluid -->
 </section>
 
 <?php
 
 if (isset($_POST['action']) && $_POST['action'] === 'edit' && isset($_POST['editId']) && $_REQUEST['user'] == "teacher") {
 
-$u_id = $_POST['userId'];
-$u_name = $_POST['userName'];
-$u_email = $_POST['userEmail'];
+    $u_id = $_POST['userId'];
+    $u_name = $_POST['userName'];
+    $u_email = $_POST['userEmail'];
 
     $sql = "UPDATE `user_accounts` SET `name` = '$u_name' , `email` = '$u_email' WHERE `id` = $u_id";
     $result = mysqli_query($db_connection, $sql);
@@ -421,9 +435,9 @@ $u_email = $_POST['userEmail'];
 }
 if (isset($_POST['action']) && $_POST['action'] === 'edit' && isset($_POST['editId']) && $_REQUEST['user'] == "student") {
 
-$u_id = $_POST['userId'];
-$u_name = $_POST['userName'];
-$u_email = $_POST['userEmail'];
+    $u_id = $_POST['userId'];
+    $u_name = $_POST['userName'];
+    $u_email = $_POST['userEmail'];
 
     $sql = "UPDATE `user_accounts` SET `name` = '$u_name' , `email` = '$u_email' WHERE `id` = $u_id";
     $result = mysqli_query($db_connection, $sql);
@@ -433,21 +447,21 @@ $u_email = $_POST['userEmail'];
 }
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['deleteId']) && $_REQUEST['user'] == "teacher") {
     $deleteId = $_GET['deleteId'];
-    
+
     $sql = "DELETE FROM `user_accounts` WHERE Id=$deleteId";
     $result = mysqli_query($db_connection, $sql);
     $_SESSION['toastMessage'] = 'Record Deleted Successfully';
     echo "<script>window.location.href='user-accounts.php?user=teacher'</script>";
 }
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['deleteId']) && $_REQUEST['user'] == "student") {
-        $deleteId = $_GET['deleteId'];
-        
-        $sql = "DELETE FROM `user_accounts` WHERE id=$deleteId";
-        $result = mysqli_query($db_connection, $sql);
-        $sql = "DELETE FROM `usermeta` WHERE user_id=$deleteId";
-        $result = mysqli_query($db_connection, $sql);
-        $_SESSION['toastMessage'] = 'Record Deleted Successfully';
-        echo "<script>window.location.href='user-accounts.php?user=student'</script>";
+    $deleteId = $_GET['deleteId'];
+
+    $sql = "DELETE FROM `user_accounts` WHERE id=$deleteId";
+    $result = mysqli_query($db_connection, $sql);
+    $sql = "DELETE FROM `usermeta` WHERE user_id=$deleteId";
+    $result = mysqli_query($db_connection, $sql);
+    $_SESSION['toastMessage'] = 'Record Deleted Successfully';
+    echo "<script>window.location.href='user-accounts.php?user=student'</script>";
 }
 
 ?>

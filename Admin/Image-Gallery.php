@@ -2,18 +2,21 @@
 <?php include('header.php'); ?>
 <?php include('sidebar.php'); ?>
 <style>
+    .gallery-image {
+        border: 2px solid #ddd;
+        /* Light gray border */
+        border-radius: 5px;
+        /* Rounded corners */
+        transition: transform 0.2s;
+        /* Smooth transition for hover effect */
+    }
 
-.gallery-image {
-    border: 2px solid #ddd; /* Light gray border */
-    border-radius: 5px; /* Rounded corners */
-    transition: transform 0.2s; /* Smooth transition for hover effect */
-}
-
-.gallery-image:hover {
-    transform: scale(1.05); /* Slightly enlarge the image on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
-}
-
+    .gallery-image:hover {
+        transform: scale(1.05);
+        /* Slightly enlarge the image on hover */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        /* Add shadow on hover */
+    }
 </style>
 <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -50,32 +53,33 @@
                         <a class="btn btn-sm btn-primary float-end" href="?upload=upload-img">Upload Images</a>
                     </div>
                     <div class="card-body">
-                        <?php 
-                        if(isset($_GET['upload']) && $_GET['upload'] == 'upload-img'){ ?>
+                        <?php
+                        if (isset($_GET['upload']) && $_GET['upload'] == 'upload-img') { ?>
                             <form action="" method="post" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <label for="imageUpload">Upload Images:</label>
-                                    <input type="file" name="images[]" id="imageUpload" class="form-control" multiple required>
+                                    <input type="file" name="images[]" id="imageUpload" class="form-control" multiple
+                                        required>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Upload</button>
                             </form>
                         <?php } else { ?>
                             <div class="row">
-                            <?php
-                            // Fetch and display images from the database
-                            $query = "SELECT * FROM images ORDER BY upload_date DESC";
-                            $result = mysqli_query($db_connection, $query);
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                echo "<div class='col-sm-2'>
+                                <?php
+                                // Fetch and display images from the database
+                                $query = "SELECT * FROM images ORDER BY upload_date DESC";
+                                $result = mysqli_query($db_connection, $query);
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    echo "<div class='col-sm-2'>
                                         <a href='#' data-toggle='modal' data-target='#imageModal'
                                             data-image='" . htmlspecialchars($row['file_path']) . "' 
                                             data-title='" . htmlspecialchars($row['file_name']) . "'>
                                             <img src='" . htmlspecialchars($row['file_path']) . "' class='img-fluid mb-2 gallery-image' alt='Image'>
                                         </a>
                                       </div>";
-                            }
-                            ?>
-                        </div>
+                                }
+                                ?>
+                            </div>
                         <?php } ?>
                     </div>
                 </div>
@@ -85,7 +89,8 @@
 </div>
 
 <!-- Modal for viewing images -->
-<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -95,9 +100,13 @@
                 </button>
             </div>
             <div class="modal-body position-relative">
-                <button id="prevButton" class="btn bg-gray rounded-circle position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%);"><i class="fa-solid fa-angle-left"></i></button>
+                <button id="prevButton" class="btn bg-gray rounded-circle position-absolute"
+                    style="left: 10px; top: 50%; transform: translateY(-50%);"><i
+                        class="fa-solid fa-angle-left"></i></button>
                 <img id="modalImage" src="" class="img-fluid" alt="Image">
-                <button id="nextButton" class="btn bg-gray rounded-circle position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%);"><i class="fa-solid fa-angle-right"></i></button>
+                <button id="nextButton" class="btn bg-gray rounded-circle position-absolute"
+                    style="right: 10px; top: 50%; transform: translateY(-50%);"><i
+                        class="fa-solid fa-angle-right"></i></button>
             </div>
             <div class="modal-footer">
                 <a id="downloadButton" class="btn btn-primary" href="#" download>Download</a>
@@ -123,7 +132,7 @@
             $('#imageModalLabel').text(imageTitle);
 
             // Store all images in an array
-            images = $('[data-toggle="modal"]').map(function() {
+            images = $('[data-toggle="modal"]').map(function () {
                 return $(this).data('image');
             }).get();
 
@@ -159,7 +168,7 @@
         <?php endif; ?>
     });
 </script>
-<?php 
+<?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['images'])) {
     $targetDir = "../dist/uploads/"; // Ensure this directory exists and is writable
     if (!is_dir($targetDir)) {
