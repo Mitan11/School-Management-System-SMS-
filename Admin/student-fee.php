@@ -25,6 +25,7 @@
                 $std_id = isset($_GET['std_id']) ? $_GET['std_id'] : '';
                 $usermeta = get_user_metadata($std_id);
                 $class = get_post(['id' => $usermeta['class']]);
+                $section = get_post(['id' => $usermeta['section']]);
                 ?>
 
                 <div class="card">
@@ -36,6 +37,7 @@
                     <div class="card-body">
                         <strong>Name : </strong><?php print_r(get_users(array('id' => $std_id))[0]->name); ?><br>
                         <strong>Class : </strong><?php echo $class->title; ?>
+                        <br><strong>Section :   </strong> </><?php echo $section->title ?>
                     </div>
                 </div>
 

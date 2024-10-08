@@ -34,8 +34,7 @@ if (isset($_POST['form_submitted'])) {
         mysqli_query($db_connection, "INSERT INTO `metadata` (`item_id`, `meta_key`, `meta_value`) VALUES ('$item_id', '$key', '$value')");
     }
 
-    $success_msg = true;
-
+    $_SESSION['toastMessage'] = "Payment has been completed , Thank You";
 }
 
 if (isset($_GET['action']) && $_GET['action'] == 'view-invoice') { ?>
@@ -148,7 +147,17 @@ if (isset($_GET['action']) && $_GET['action'] == 'view-invoice') { ?>
 
     ?>
 
-
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">SMS</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="message">
+            <!-- Message will be displayed here -->
+        </div>
+    </div>
+</div>
 
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -170,17 +179,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'view-invoice') { ?>
 
     <section class="content">
         <div class="container-fluid">
-            <?php
-            if ($success_msg) { ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>Payment has been completed , Thank You </strong>
-                    <button type="button" class="btn-close p-3" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php }
-            ?>
             <?php 
             $usermeta = get_user_metadata($std_id);
             $class = get_post(['id' => $usermeta['class']]);
+            $section = get_post(['id' => $usermeta['section']]);
 
             ?>
 
@@ -192,7 +194,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'view-invoice') { ?>
                 </div>
                 <div class="card-body">
                     <strong>Name : </strong><?php print_r(get_users(array('id' => $std_id))[0]->name); ?>
-                    <br><strong>Class : </strong><?php echo $class->title; ?>
+                    <br><strong>Class : </strong><?php echo $class->title ?>
+                    <br><strong>Section :</strong> </><?php echo $section->title ?>
                 </div>
             </div>
 
@@ -338,3 +341,18 @@ if (isset($_GET['action']) && $_GET['action'] == 'view-invoice') { ?>
 
 <?php }
 include('footer.php'); ?>
+
+<script>
+    $(document).ready(function () {
+        <?php if (isset($_SESSION['toastMessage'])): ?>
+            // Set the message inside the toast
+            $('#message').text("<?php echo htmlspecialchars($_SESSION['toastMessage']); ?>");
+
+            // Show the toast
+            $('.toast').toast('show');
+
+            // Unset the session message to avoid showing it again on page reload
+            <?php unset($_SESSION['toastMessage']); ?>
+        <?php endif; ?>
+    });
+</script>
