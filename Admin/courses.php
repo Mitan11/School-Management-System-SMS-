@@ -186,9 +186,9 @@ if (isset($_POST['submit'])) {
                                             <td><?= $course->duration ?></td>
                                             <td><?= $course->date ?></td>
                                             <td>
-                                            <button class="btn btn-warning"><i class="fa fa-solid fa-pen-to-square"></i></button>
-                                                &nbsp;&nbsp;
-                                                <button class="btn btn-danger"><i class="fa fa-solid fa-trash"></i></button>
+                                                <a class="btn btn-danger"
+                                                    href="courses.php?action=delete&deleteId=<?= $course->id ?>"><i
+                                                        class="fa fa-solid fa-trash"></i></a>
                                             </td>
                                         </tr>
                                     <?php } ?>
@@ -206,6 +206,18 @@ if (isset($_POST['submit'])) {
 </div>
 <!-- /.content-header -->
 <?php include('footer.php'); ?>
+
+<?php
+
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['deleteId']) ) {
+    $deleteId = $_GET['deleteId'];
+
+    $sql = "DELETE FROM `courses` WHERE id=$deleteId";
+    $result = mysqli_query($db_connection, $sql);
+    $_SESSION['toastMessage'] = 'Record Deleted Successfully';
+    echo "<script>window.location.href='courses.php'</script>";
+}
+?>
 
 <script>
     $(document).ready(function () {

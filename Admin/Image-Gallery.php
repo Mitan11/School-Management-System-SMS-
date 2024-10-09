@@ -76,6 +76,7 @@
                                             data-title='" . htmlspecialchars($row['file_name']) . "'>
                                             <img src='" . htmlspecialchars($row['file_path']) . "' class='img-fluid mb-2 gallery-image' alt='Image'>
                                         </a>
+                                        <a href='?action=delete&imageId=" . $row['id'] . "' class='btn btn-danger btn-sm'>Delete</a>
                                       </div>";
                                 }
                                 ?>
@@ -224,5 +225,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['images'])) {
             }
         }
     }
+}
+?>
+
+<?php
+if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['imageId'])) {
+    $imageId = intval($_GET['imageId']); // Sanitize input
+
+    // Fetch the image path from the database
+    $query = "SELECT file_path FROM images WHERE id = $imageId";
+    $result = mysqli_query($db_connection, $query);
+    
+    if ($result && mysqli_num_rows($result) > 0) {
+        $image = mysqli_fetch_assoc($result);
+        $filePath = $image['file_path'];
+
+        // Delete the image file from the server
+        if (unlink($filePath)) {
+            // Delete the record from the database
+            $deleteQuery = "DELETE FROM images WHERE id = $imageId";
+            if (mysqli_query($db_connection, $deleteQuery)) {
+                $_SESSION['toastMessage'] = "Image deleted successfully.";
+            } else {
+                $_SESSION['toastMessage'] = "Error deleting image record from database.";
+            }
+        } else {
+            $_SESSION['toastMessage'] = "Error deleting image file.";
+        }
+    } else {
+        $_SESSION['toastMessage'] = "Image not found.";
+    }
+    
+    header("Location: Image-Gallery.php"); // Redirect back to the gallery
+    exit();
 }
 ?>

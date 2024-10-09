@@ -14,6 +14,15 @@
 </div>
 <?php
 if (isset($_POST['submit'])) {
+    if (isset($_POST['sections']) && is_array($_POST['sections'])) {
+        $sections = $_POST['sections']; // This should now be an array
+        // Debugging: Print the sections array
+        echo '<pre>';
+        print_r($sections);
+        echo '</pre>';
+    } else {
+        echo 'No sections selected or sections is not an array.';
+    }
     $title = $_POST['title'];
 
     $sections = $_POST['section'];
@@ -77,12 +86,14 @@ if (isset($_POST['submit'])) {
                                         'status' => 'publish',
                                     );
                                     $sections = get_posts($args);
-                                    foreach ($sections as $key => $section) { ?>
+                                    foreach ($sections as $section) { ?>
                                         <div>
-                                            <label for="<?php echo $key ?>">
-                                                <input type="checkbox" name="section[]" id="<?php echo $key ?>"
-                                                    value="<?= $section->id ?>" placeholder="section">
-                                                <?php echo $section->title ?>
+                                            <label for="section_<?php echo $section->id; ?>">
+                                                <input type="checkbox" name="sections[]" 
+                                                    id="section_<?php echo $section->id; ?>"
+                                                    value="<?= $section->id ?>"
+                                                    placeholder="section">
+                                                <?php echo htmlspecialchars($section->title); ?>
                                             </label>
                                         </div>
                                         <?php
@@ -136,9 +147,78 @@ if (isset($_POST['submit'])) {
                                             </td>
                                             <td><?= $class->publish_date ?></td>
                                             <td>
-                                            <button class="btn btn-warning"><i class="fa fa-solid fa-pen-to-square"></i></button>
+                                                <a class="btn btn-warning" href="" data-bs-toggle="modal"
+                                                    data-bs-target="#updateUserModal<?= $class->id ?>"><i
+                                                        class="fa fa-solid fa-pen-to-square"></i></a>
+                                                <div class="modal fade" id="updateUserModal<?= $class->id ?>" tabindex="-1"
+                                                    aria-labelledby="updateUserModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h1 class="modal-title fs-5" id="updateUserModalLabel">Update
+                                                                    Class
+                                                                    Information</h1>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form id="updateUserForm" method="POST" action="">
+                                                                    <input type="hidden" name="action" value="edit">
+                                                                    <input type="hidden" name="editId"
+                                                                        value="<?= $class->id ?>">
+
+                                                                    <div class="form-group">
+                                                                        <label for="classid">Class id</label>
+                                                                        <input type="text" id="classid" name="classid" value="<?= $class->id ?>"
+                                                                            placeholder="Enter id" required
+                                                                            class="form-control" readonly>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="classname">Class name</label>
+                                                                        <input type="text" id="classname" name="classname" value="<?= $class->title ?>"
+                                                                            placeholder="Enter Title" required
+                                                                            class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="section">Section</label>
+                                                                        <?php
+                                                                        $args = array(
+                                                                            'type' => 'section',
+                                                                            'status' => 'publish',
+                                                                        );
+                                                                        $sections = get_posts($args);
+                                                                        foreach ($sections as $key => $section) { ?>
+                                                                            <div>
+                                                                                <label for="<?php echo $key ?>">
+                                                                                    <input type="checkbox" name="sections[]"
+                                                                                        id="<?php echo $key ?>"
+                                                                                        value="<?= $section->id ?>"
+                                                                                        placeholder="section">
+                                                                                    <?php echo $section->title ?>
+                                                                                </label>
+                                                                            </div>
+                                                                            <?php
+                                                                        } ?>
+                                                                    </div>
+
+                                                                    <div class="float-end">
+                                                                        <button type="button" class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">Close</button>
+                                                                        <button type="submit" class="btn btn-primary"
+                                                                            id="saveChanges" name="save"
+                                                                            value="SaveChanges">Save
+                                                                            Changes</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 &nbsp;&nbsp;
-                                                <button class="btn btn-danger"><i class="fa fa-solid fa-trash"></i></button>
+                                                <a class="btn btn-danger"
+                                                    href="classes.php?action=delete&deleteId=<?= $class->id ?>"><i
+                                                        class="fa fa-solid fa-trash"></i></a>
                                             </td>
                                         </tr>
                                     <?php } ?>
@@ -156,6 +236,46 @@ if (isset($_POST['submit'])) {
 </div>
 <!-- /.content-header -->
 <?php include('footer.php'); ?>
+
+
+<?php
+
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['deleteId'])) {
+    $deleteId = $_GET['deleteId'];
+
+    $sql = "DELETE FROM `posts` WHERE id=$deleteId";
+    $result = mysqli_query($db_connection, $sql);
+
+    $sql = "DELETE FROM `metadata` WHERE item_id=$deleteId";
+    $result = mysqli_query($db_connection, $sql);
+    $_SESSION['toastMessage'] = 'Record Deleted Successfully';
+    echo "<script>window.location.href='classes.php'</script>";
+}
+
+if (isset($_POST['action']) && $_POST['action'] === 'edit' && isset($_POST['editId'])) {
+
+    $classid = $_POST['classid'];
+    $classname = $_POST['classname'];
+
+    $sections = $_POST['sections'];
+
+    $sql = "UPDATE `posts` SET `title` = '$classname'  WHERE `id` = $classid";
+    $result = mysqli_query($db_connection, $sql);
+    
+    foreach($sections as $key => $value){    
+        $sql = "DELETE FROM `metadata` WHERE `item_id` = $classid AND `meta_key` = 'section'";
+        $result = mysqli_query($db_connection, $sql);
+    }
+    foreach($sections as $key => $value){    
+        mysqli_query($db_connection, "INSERT INTO `metadata` (`item_id`,`meta_key`,`meta_value`) VALUES ('$classid','section','$value')") or die(mysqli_error($db_conn));
+    }
+
+    $_SESSION['toastMessage'] = 'Record Updated Successfully';
+
+    echo "<script>window.location.href='classes.php'</script>";
+}
+
+?>
 
 <script>
     $(document).ready(function () {

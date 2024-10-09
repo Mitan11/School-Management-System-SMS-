@@ -69,9 +69,59 @@ if (isset($_POST['submit'])) {
                                                 <td><?= $count++ ?></td>
                                                 <td><?= $section->title ?></td>
                                                 <td>
-                                                <button class="btn btn-warning"><i class="fa fa-solid fa-pen-to-square"></i></button>
-                                                &nbsp;&nbsp;
-                                                <button class="btn btn-danger"><i class="fa fa-solid fa-trash"></i></button>
+                                                    <a class="btn btn-warning" href="" data-bs-toggle="modal"
+                                                        data-bs-target="#updateUserModal<?= $section->id ?>"><i
+                                                            class="fa fa-solid fa-pen-to-square"></i>
+                                                    </a>
+                                                    <div class="modal fade" id="updateUserModal<?= $section->id ?>"
+                                                        tabindex="-1" aria-labelledby="updateUserModalLabel"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h1 class="modal-title fs-5" id="updateUserModalLabel">
+                                                                        Update Section
+                                                                        Information</h1>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form id="updateUserForm" method="POST" action="">
+                                                                        <input type="hidden" name="action" value="edit">
+                                                                        <input type="hidden" name="editId"
+                                                                            value="<?= $section->id ?>">
+                                                                        <div class="mb-3">
+                                                                            <label for="userId" class="form-label">Section id</label>
+                                                                            <input type="text" class="form-control"
+                                                                                id="userId" name="sectionid"
+                                                                                value="<?= $section->id ?>" readonly>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <label for="userName"
+                                                                                class="form-label">Section</label>
+                                                                            <input type="text" class="form-control"
+                                                                                id="userName" name="sectionName"
+                                                                                value="<?= $section->title ?>" required>
+                                                                        </div>
+                                                                    
+                                                                        <div class="float-end">
+                                                                            <button type="button" class="btn btn-secondary"
+                                                                                data-bs-dismiss="modal">Close</button>
+                                                                            <button type="submit" class="btn btn-primary"
+                                                                                id="saveChanges" name="save"
+                                                                                value="SaveChanges">Save
+                                                                                Changes</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    &nbsp;&nbsp;
+                                                    <a class="btn btn-danger"
+                                                        href="sections.php?action=delete&deleteId=<?= $section->id ?>"><i
+                                                            class="fa fa-solid fa-trash"></i></a>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -110,6 +160,35 @@ if (isset($_POST['submit'])) {
 </div>
 <!-- /.content-header -->
 <?php include('footer.php'); ?>
+
+
+<?php
+
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['deleteId'])) {
+    $deleteId = $_GET['deleteId'];
+
+    $sql = "DELETE FROM `posts` WHERE id=$deleteId";
+    $result = mysqli_query($db_connection, $sql);
+    $_SESSION['toastMessage'] = 'Record Deleted Successfully';
+    echo "<script>window.location.href='sections.php'</script>";
+}
+
+if (isset($_POST['action']) && $_POST['action'] === 'edit' && isset($_POST['editId'])) {
+
+    $sectionid = $_POST['sectionid'];
+    $sectionName = $_POST['sectionName'];
+
+    $sql = "UPDATE `posts` SET `title` = '$sectionName'  WHERE `id` = $sectionid";
+    $result = mysqli_query($db_connection, $sql);
+    $_SESSION['toastMessage'] = 'Record Updated Successfully';
+
+    echo "<script>window.location.href='sections.php'</script>";
+}
+
+?>
+
+
+
 <script>
     $(document).ready(function () {
         <?php if (isset($_SESSION['toastMessage'])): ?>

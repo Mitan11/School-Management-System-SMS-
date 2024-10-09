@@ -2,6 +2,44 @@
 <?php include('header.php'); ?>
 <?php include('sidebar.php'); ?>
 
+<?php
+
+$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : "";
+if (isset($_POST['form_submitted'])) {
+
+    $status = isset($_POST["status"]) ? $_POST["status"] : "success";
+    $firstname = isset($_POST["firstname"]) ? $_POST["firstname"] : "";
+    $amount = isset($_POST["amount"]) ? $_POST["amount"] : "";
+    $email = isset($_POST["email"]) ? $_POST["email"] : "";
+    $month = isset($_POST["month"]) ? $_POST["month"] : "";
+
+
+
+    $title = $month . ' - Fee';
+
+    $query = mysqli_query($db_connection, "INSERT INTO `posts` (`title`, `type`, `description`, `status`, `author` , `parent`) VALUES ('$title', 'payment', '' , '$status' , '$user_id', 0)");
+    if ($query) {
+        $item_id = mysqli_insert_id($db_connection);
+    }
+
+    $payment_data = array(
+        'amount' => $amount,
+        'status' => $status,
+        'student_id' => $user_id,
+        'month' => $month
+    );
+
+    foreach ($payment_data as $key => $value) {
+        mysqli_query($db_connection, "INSERT INTO `metadata` (`item_id`, `meta_key`, `meta_value`) VALUES ('$item_id', '$key', '$value')");
+    }
+
+    $_SESSION['toastMessage'] = "Payment has been completed , Thank You";
+}
+
+
+?>
+
+
 <!-- Content Header (Page header) -->
 <div class="content-header">
     <div class="container-fluid">
@@ -263,5 +301,69 @@
     </section>
 
 </div>
+
+<div class="modal fade" id="paynow-popup" tabindex="-1" aria-labelledby="paynow-popupLabel" aria-hidden="true">
+    
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="paynow-popupLabel">Paynow</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">
+                        <input type="hidden" name="amount" value="500">
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="">Full Name</label>
+                                    <input type="text" class="form-control" readonly name="firstname"
+                                        value="<?php print_r(get_users(array('id' => $std_id))[0]->name) ?>">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="">Email</label>
+                                    <input type="email" class="form-control" readonly name="email"
+                                        value="<?php print_r(print_r(get_users(array('id' => $std_id))[0]->email)) ?>">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="">Mobile</label>
+                                    <input type="text" class="form-control" readonly name="phone" value="7986541230">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="">Month</label>
+                                    <input type="text" class="form-control" id="month" readonly name="month" value="">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="">Amount&nbsp;</label>
+                                    <i class="fa fa-rupee-sign"></i>500.00
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <button type="submit" name="form_submitted" value="f-s" class="btn btn-success">Confirm & pay</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        $(document).on('click', '.paynow-btn', function () {
+            var month = jQuery(this).data('month');
+            jQuery('#month').val(month);
+        });
+
+    </script>
 <!-- /.content-header -->
 <?php include('footer.php'); ?>

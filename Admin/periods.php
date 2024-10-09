@@ -79,8 +79,13 @@ exit();
                                             $args = array('type'=>'period','status'=>'publish',);
                                             $periods = get_posts($args);
                                             foreach($periods as $period){
-                                                $from = get_metadata($period->id,'from')[0]->meta_value;
-                                                $to = get_metadata($period->id,'to')[0]->meta_value;
+                                                // Retrieve metadata for 'from'
+                                                $from_meta = get_metadata($period->id, 'from');
+                                                $from = !empty($from_meta) ? $from_meta[0]->meta_value : 'N/A'; // Default to 'N/A' if not found
+
+                                                // Retrieve metadata for 'to'
+                                                $to_meta = get_metadata($period->id, 'to');
+                                                $to = !empty($to_meta) ? $to_meta[0]->meta_value : 'N/A'; // Default to 'N/A' if not found
                                                 ?>
                                             <tr>
                                                 <td><?=$count++ ?></td>
@@ -88,9 +93,62 @@ exit();
                                                 <td><?php echo date('h:i A',strtotime($from)) ?></td>
                                                 <td><?php echo date('h:i A',strtotime($to)) ?></td>
                                                 <td>
-                                                <button class="btn btn-warning"><i class="fa fa-solid fa-pen-to-square"></i></button>
+                                                <a class="btn btn-warning" href="" data-bs-toggle="modal"
+                                                    data-bs-target="#updateUserModal<?= $period->id ?>"><i
+                                                        class="fa fa-solid fa-pen-to-square"></i></a>
+                                                <div class="modal fade" id="updateUserModal<?= $period->id ?>" tabindex="-1"
+                                                    aria-labelledby="updateUserModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h1 class="modal-title fs-5" id="updateUserModalLabel">Update
+                                                                    Period Information</h1>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form id="updateUserForm" method="POST" action="">
+                                                                    <input type="hidden" name="action" value="edit">
+                                                                    <input type="hidden" name="editId"
+                                                                        value="<?= $period->id ?>">
+
+                                                                        <div class="form-group">
+                                                                            <label for="periodid<?= $period->id ?>">Perido id</label>
+                                                                            <input type="text" id="periodid<?= $period->id ?>" name="periodid" value="<?= htmlspecialchars($period->id) ?>" required class="form-control" readonly>
+                                                                        </div>
+                                                                    <!-- New fields for editing -->
+                                                                    <div class="form-group">
+                                                                        <label for="editTitle<?= $period->id ?>">Title</label>
+                                                                        <input type="text" id="editTitle<?= $period->id ?>" name="editTitle" value="<?= htmlspecialchars($period->title) ?>" required class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="editFrom<?= $period->id ?>">From</label>
+                                                                        <input type="time" id="editFrom<?= $period->id ?>" name="editFrom" value="<?= date('H:i', strtotime($from)) ?>" required class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="editTo<?= $period->id ?>">To</label>
+                                                                        <input type="time" id="editTo<?= $period->id ?>" name="editTo" value="<?= date('H:i', strtotime($to)) ?>" required class="form-control">
+                                                                    </div>
+                                                                    <!-- End of new fields -->
+
+                                                                    <div class="float-end">
+                                                                        <button type="button" class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">Close</button>
+                                                                        <button type="submit" class="btn btn-primary"
+                                                                            id="saveChanges" name="save"
+                                                                            value="SaveChanges">Save
+                                                                            Changes</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 &nbsp;&nbsp;
-                                                <button class="btn btn-danger"><i class="fa fa-solid fa-trash"></i></button>
+                                                <a class="btn btn-danger"
+                                                    href="periods.php?action=delete&deleteId=<?= $period->id ?>"><i
+                                                        class="fa fa-solid fa-trash"></i></a>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -138,6 +196,48 @@ exit();
 </div>
 <!-- /.content-header -->
 <?php include('footer.php'); ?>
+
+<?php
+
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['deleteId'])) {
+    $deleteId = $_GET['deleteId'];
+
+    $sql = "DELETE FROM `posts` WHERE id=$deleteId";
+    $result = mysqli_query($db_connection, $sql);
+
+    $sql = "DELETE FROM `metadata` WHERE item_id=$deleteId";
+    $result = mysqli_query($db_connection, $sql);
+    $_SESSION['toastMessage'] = 'Record Deleted Successfully';
+    echo "<script>window.location.href='periods.php'</script>";
+}
+
+if (isset($_POST['action']) && $_POST['action'] === 'edit' && isset($_POST['editId'])) {
+    $periodid = $_POST['periodid'];
+    $editTitle = $_POST['editTitle'];
+    $editFrom = $_POST['editFrom'];
+    $editTo = $_POST['editTo'];
+
+    // Update the post title
+    $updatePostQuery = "UPDATE `posts` SET `title` = '$editTitle' WHERE `id` = $periodid";
+    mysqli_query($db_connection, $updatePostQuery);
+
+    // Update the metadata for 'from'
+    $updateFromMetaQuery = "UPDATE `metadata` SET `meta_value` = '$editFrom' WHERE `item_id` = $periodid AND `meta_key` = 'from'";
+    mysqli_query($db_connection, $updateFromMetaQuery);
+
+    // Update the metadata for 'to'
+    $updateToMetaQuery = "UPDATE `metadata` SET `meta_value` = '$editTo' WHERE `item_id` = $periodid AND `meta_key` = 'to'";
+    mysqli_query($db_connection, $updateToMetaQuery);
+
+   
+
+    $_SESSION['toastMessage'] = 'Record Updated Successfully';
+
+    echo "<script>window.location.href='periods.php'</script>";
+}
+
+
+?>
 
 <script>
 $(document).ready(function() {
